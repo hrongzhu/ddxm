@@ -1,0 +1,65 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<form action="{:url('Member/updateScoreRule')}" method="post" id="form-edit">
+			<input type="hidden" name="id" value="{$info.id|default=0}">
+			<div class="form-group">
+				<label for="ratio">积分获取比例</label>
+				<input type="text" name="ratio" class="form-control" value="{$info.ratio|default=1.0}" id="ratio" placeholder="">
+			</div>
+			<div class="form-group">
+				<label for="level">会员等级</label>
+				<select class="form-control" name="level_id">
+                    <option value="">请选择</option>
+                    <foreach $level_list as $v>
+                        <option <if condition="isset($info.id) && $info.level_id == $v.id">selected</if> value="{$v->id}">{$v->level_name}</option>
+                    </foreach>
+                </select>
+			</div>
+            <div>
+                <input type="radio" name="type" <if condition="isset($info.id) && $info.type == 1">checked</if> value="1">
+                <label>购买商品</label>
+                <input type="radio" name="type" <if condition="isset($info.id) && $info.type == 2">checked</if> value="2" >
+                <label>消费服务</label>
+                <input type="radio" name="type" <if condition="isset($info.id) && $info.type == 3">checked</if> value="3" >
+                <label>通用</label>
+            </div>
+			<button type="submit" class="btn btn-default">提交</button>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script src="/plugins/h-ui/js/H-ui.min.js"></script>
+	<script type="text/javascript">
+
+        $(function () {
+            /*管理员-编辑*/
+            function admin_edit(title, url, w, h) {
+                layer_show(title, url, w, h);
+            }
+
+            $('#form-edit').bind('submit', function () {
+                $("#form-edit").ajaxSubmit(function (result) {
+                    if (result.code == 200) {
+
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            window.parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 0,
+                            time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+	</script>
+</body>
+</html>

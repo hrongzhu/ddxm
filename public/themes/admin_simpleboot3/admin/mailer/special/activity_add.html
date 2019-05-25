@@ -1,0 +1,341 @@
+<include file="public@header" />
+<!-- <link rel="stylesheet" href="__STATIC__/css/demo.css" type="text/css"> -->
+<link rel="stylesheet" href="__STATIC__/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<SCRIPT type="text/javascript">
+		var setting = {
+			check: {
+				enable: true
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			}
+		};
+
+		/*var zNodes =[
+			{id: 39, pId: 0, name: "育婴用品"},
+			{id: 40, pId: 0, name: "个人洗护"},
+			{id: 41, pId: 0, name: "生活用品"},
+			{id: 42, pId: 0, name: "玩具童车"},
+			{id: 38, pId: 35, name: "爱他美"},
+			{id: 36, pId: 0, name: "营养辅食"},
+			{id: 35, pId: 0, name: "奶粉"},
+			{id: 37, pId: 0, name: "喂养洗护"},
+			{id: 34, pId: 0, name: "尿不湿"},
+			{id: 43, pId: 0, name: "服装服饰"},
+			{id: 48, pId: 35, name: "牛栏"},
+			{id: 49, pId: 35, name: "雀巢"},
+			{id: 50, pId: 35, name: "贝拉米"},
+			{id: 51, pId: 35, name: "喜宝"},
+			{id: 52, pId: 35, name: "雅培"},
+			{id: 53, pId: 35, name: "伊利"},
+			{id: 76, pId: 42, name: "早教益智"},
+			{id: 54, pId: 35, name: "a2"},
+			{id: 55, pId: 35, name: "阿拉Arla"},
+			{id: 72, pId: 43, name: "卫衣"},
+			{id: 56, pId: 35, name: "安满ANMUM"},
+			{id: 57, pId: 35, name: "贝因美"},
+			{id: 73, pId: 42, name: "早教益智"},
+			{id: 58, pId: 35, name: "达能佳丽雅Gallia"},
+			{id: 59, pId: 35, name: "可瑞康Karicare"},
+			{id: 60, pId: 35, name: "满趣健MUNCHKIN"},
+			{id: 74, pId: 43, name: "外套"},
+			{id: 61, pId: 35, name: "美林Mellin"},
+			{id: 62, pId: 35, name: "美素Hero Baby"},
+			{id: 75, pId: 42, name: "早教益智"},
+			{id: 63, pId: 35, name: "美赞臣"},
+			{id: 64, pId: 35, name: "握乐康"},
+			{id: 65, pId: 34, name: "花王Merries"},
+			{id: 66, pId: 34, name: "大王Goon"},
+			{id: 67, pId: 34, name: "帮宝适"},
+			{id: 71, pId: 43, name: "羽绒服"},
+			{id: 68, pId: 34, name: "尤妮佳Moony"},
+			{id: 1, pId: 50, name: "【品牌直供】美素佳儿金装3段900g(新包装）"},
+			{id: 2, pId: 50, name: "澳洲爱他美白金版profutura1段（澳洲直邮）"},
+			{id: 3, pId: 50, name: "澳洲爱他美白金版profutura2段（澳洲直邮）"},
+			{id: 4, pId: 50, name: "澳洲爱他美白金版profutura3段（澳洲直邮）"},
+			{id: 5, pId: 50, name: "澳洲爱他美白金版profutura4段（澳洲直邮）"},
+			{id: 6, pId: 50, name: "澳洲爱他美金装加强1段"},
+			{id: 7, pId: 50, name: "澳洲爱他美金装加强2段"},
+			{id: 8, pId: 50, name: "澳洲爱他美金装加强3段"},
+			{id: 9, pId: 50, name: "澳洲爱他美金装加强4段"},
+			{id: 10, pId: 50, name: "德国爱他美Aptamil3段"},
+			{id: 11, pId: 50, name: "大王M68纸尿裤(日本直邮)"},
+			{id: 12, pId: 50, name: "德国爱他美Aptamil1+"},
+			{id: 13, pId: 50, name: "德国爱他美Aptamil1段"},
+			{id: 14, pId: 50, name: "德国爱他美Aptamil2+"},
+			{id: 15, pId: 50, name: "德国爱他美Aptamil2段"},
+			{id: 16, pId: 50, name: "大王XL42纸尿裤(日本直邮)"},
+			{id: 17, pId: 50, name: "德国爱他美Aptamil3段"},
+			{id: 18, pId: 50, name: "大王L54纸尿裤(日本直邮)"},
+			{id: 26, pId: 50, name: "大王S84纸尿裤"},
+			{id: 19, pId: 50, name: "德国爱他美AptamilPre 段"},
+			{id: 20, pId: 50, name: "英国爱他美1段"},
+			{id: 21, pId: 50, name: "英国爱他美2段"},
+			{id: 22, pId: 50, name: "英国爱他美3段"},
+			{id: 23, pId: 50, name: "大王NB90纸尿裤"},
+			{id: 24, pId: 50, name: "英国爱他美4段"},
+			{id: 25, pId: 50, name: "英国爱他美饥饿型"},
+			{id: 27, pId: 50, name: " 澳洲a2 Platinum白金1段"},
+			{id: 28, pId: 50, name: "澳洲A2platinum白金 2段"},
+			{id: 29, pId: 50, name: "花王M68纸尿裤"},
+			{id: 30, pId: 50, name: "澳洲A2platinum白金3段"},
+			{id: 31, pId: 50, name: "德国喜宝益生元1+段"},
+			{id: 32, pId: 50, name: "中国贝因美金装爱＋3段"},
+			{id: 33, pId: 50, name: "雅培亲护1段820g"},
+			{id: 34, pId: 50, name: "花王NB96纸尿裤"},
+			{id: 35, pId: 50, name: "花王S88纸尿裤 白标"},
+			{id: 36, pId: 50, name: " 雅培亲护2段820g"},
+			{id: 976, pId: 50, name: "呵呵呵"},
+			{id: 977, pId: 51, name: "呵呵呵"},
+			{id: 978, pId: 39, name: "呵呵呵"},
+			{id: 979, pId: 62, name: "呵呵呵"},
+			{id: 980, pId: 58, name: "呵呵呵fsdfsd"},
+			{id: 981, pId: 53, name: "发生的方式大幅度"},
+			{id: 1007, pId: 63, name: "港版美赞臣奶粉"}
+		];*/
+
+		var code;
+
+		function setCheck() {
+			var zTree = $.fn.zTree.getZTreeObj("treeDemo"),
+			py = $("#py").attr("checked")? "p":"",
+			sy = $("#sy").attr("checked")? "s":"",
+			pn = $("#pn").attr("checked")? "p":"",
+			sn = $("#sn").attr("checked")? "s":"",
+			type = { "Y":py + sy, "N":pn + sn};
+			zTree.setting.check.chkboxType = type;
+			showCode('setting.check.chkboxType = { "Y" : "' + type.Y + '", "N" : "' + type.N + '" };');
+		}
+		function showCode(str) {
+			if (!code) code = $("#code");
+			code.empty();
+			code.append("<li>"+str+"</li>");
+		}
+
+		$(document).ready(function(){
+			$.ajax({
+	    			url:"{:url('Special/activity_item')}",
+	    			type:"post",
+	    			dataType: 'text',
+                    success:function(data){
+                    	var zNodes = $.parseJSON(data);
+                    	console.log(zNodes)
+                        $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+						setCheck();
+						$("#py").bind("change", setCheck);
+						$("#sy").bind("change", setCheck);
+						$("#pn").bind("change", setCheck);
+						$("#sn").bind("change", setCheck);      
+                    }
+	    		})
+		});
+	</SCRIPT>
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<ul class="nav nav-tabs">
+			<li><a href="{:url('Special/activity_list')}">专题列表</a></li>
+			<li   class="active"><a href="{:url('Special/activity_add')}">专题添加</a></li>
+		    </ul>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Special/activity_addPost')}" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题标题</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="title">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题副标题</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="subtitle">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题开始/结束时间</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="js-bootstrap-datetime" id="input-name" name="stime">-----
+					<input type="text" class="js-bootstrap-datetime" id="input-name" name="etime">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">专题列表图</label>
+				<div class="col-md-6 col-sm-10">
+					<table class="table table-bordered" style="float: left;">
+	                    <!-- <?php
+                        if(!empty($list->mainPic)){
+                            $arr = json_decode($list->mainPic,1);
+                            if(is_array($arr)){
+                            foreach ($arr as $key => $value) {
+                        ?> -->
+                        <div>                               
+                            <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="mainPic">
+                            <input type="hidden" name="mainPic[]" value="<?php echo $value;?>">
+                            <a href="javascript:;" onclick="moveImg(this)">删除</a>
+                        </div>
+                        <!-- <?php
+                            }
+                            }
+                        }
+                        ?> -->
+                        <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="showPic">
+                        <input type="file" id="files" name="files[]" ltype="text"  multiple="multiple" />    
+                        <input type="button" value=" 上传 " onclick="more_upload()" />
+                        (最多上传1张)
+                    </table>
+	            </div>
+            </div>
+            <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题详情</label>
+				<div class="col-md-6 col-sm-10">
+					<script type="text/plain" id="content" name="content"></script>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品选择</label>
+				<div class="zTreeDemoBackground left">
+					<ul id="treeDemo" class="ztree"></ul>
+				</div>
+					<ul class="list" style="display: none">
+					<li>
+						<input type="checkbox" id="py" class="checkbox first" checked />
+						<input type="checkbox" id="sy" class="checkbox first" checked />
+						<input type="checkbox" id="pn" class="checkbox first" checked />
+						<input type="checkbox" id="sn" class="checkbox first" checked />
+						<ul id="code" class="log" style="height:20px;"></ul>
+					</li>
+					</ul>
+				
+
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+    //编辑器路径定义
+    var editorURL = GV.WEB_ROOT;
+	</script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.all.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+
+	        editorcontent = new baidu.editor.ui.Editor();
+	        editorcontent.render('content');
+	        try {
+	            editorcontent.sync();
+	        } catch (err) {
+	        }
+
+	        $('.btn-cancel-thumbnail').click(function () {
+	            $('#thumbnail-preview').attr('src', '__TMPL__/public/assets/images/default-thumbnail.png');
+	            $('#thumbnail').val('');
+	        });
+	    });
+	    $(function(){
+	    	$('.selectpid').change(function(){
+	    		var pid=$('.selectpid').val();
+
+	    		$.ajax({
+	    			url:"{:url('Card/card_lian')}",
+	    			type:"post",
+	    			dataType: 'text',
+                    data: {pid: pid},
+                    success:function(data){
+                    	var selecthead="<select  name='sid' class='form-control' id='input-parent_id'><option value='0'>请选择</option>";
+                    	var selectfoot="</select>";
+                    	var med;
+                    	for (var i = 0; i <= data.length; i++) {
+                    		med+="<option value='"+data[i]['id']+"''>"+data[i]['name']+"<option>";
+                    	}
+                    	var html=selecthead+med+selectfoot;
+                    	alert(html);
+                    }
+	    		})
+	    	})
+	    })
+	    // 多图上传
+		function more_upload(){
+		    var i = 0;
+		    var s = '';
+		    $("img[id=mainPic]").each(function(n,e){
+		        i++;
+		    })
+		    var formData = new FormData();
+		    upfile = $("#files")[0].files;
+		    var ii = 1;
+		    $(upfile).each(function (n, e) {
+		        i++;
+		        if(i>1){
+		            alert("上传图片不能超过1张");
+		            clearInterval(s);
+		            return false;
+		        }
+		        var s = setTimeout(function () {
+		            formData.append('file', $(e)[0]);
+		            upload_img(2, formData);
+		        }, ii);
+		        ii += 1000;
+		    });
+		}
+        // 上传图片
+		function upload_img(id,formData){
+		    
+		    var file =  $("#lfile").val();
+		    // var files =  $("#files").val();
+
+		    if((file =='' || file == null) && id==1){
+		        alert("请选择上传文件");
+		        return false;
+		    }else{      
+		        var upfile = '';
+		        if(id==1){
+		            var formData = new FormData();
+		            upfile = $("#lfile")[0].files[0];
+		            formData.append('file',upfile);
+		        }
+		        $.ajax({
+		            url: "{:url('Item/uploadPic')}",
+		            type: "POST",
+		            data: formData,
+		            dataType:'json',
+		            processData : false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+		            contentType : false, // 不设置Content-type请求头
+		            success: function(data) {
+		                if(data.success==1){
+		                    // $(".imgList").append($(".imgList>div:first-child").clone());
+		                    if(id==1){
+		                        $("#thumb").val(data.msg);
+		                        $("#showThumb").attr('src',data.msg);
+		                    }else{
+		                        var img = '<div><img src="'+data.msg+'" id="mainPic" style="width:60px;height:100px;">';
+		                        img += '<input type="hidden" name="mainPic[]" value="'+data.msgurl+'"><a href="javascript:;" onclick="moveImg(this)">删除</a></div>'
+		                        $("#showPic").before(img);
+		                        $("#files").val('');
+		                        // $("#mainPic").val(data.msg);
+		                        // $("#showPic").attr('src',data.msg);
+		                    }
+		                }else{
+		                    alert(data.msg);
+		                }
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                alert("上传失败，请检查网络后重试");
+		            }
+		        });
+		    }
+		}
+		function moveImg(str){
+		    $(str).parent().remove();
+		}
+	</script>
+</body>
+</html>

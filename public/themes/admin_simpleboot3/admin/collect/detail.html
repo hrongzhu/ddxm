@@ -1,0 +1,219 @@
+<include file="public@header" />
+</head>
+<style>
+	.detail-head {
+		line-height: 50px;
+		font-size: 16px;
+		font-weight: 600;
+		background-color: #eee;
+		padding-left: 20px;
+	}
+	.detail-content {
+		padding: 20px 36px;
+		border-bottom: 1px solid rgba(228, 228, 228, 1);
+	}
+	.detail-content table thead {
+		background-color: #f5f5f5;
+	}
+	.detail-content table thead tr th:nth-child(1) {
+		width: 30%;
+	}
+	.detail-content table tr { height: 50px; }
+	.detail-content .items {
+		border-bottom: 1px solid rgba(228, 228, 228, 1);
+	}
+	.detail-content .items p { font-size: 0; }
+	.detail-content .special p { font-size: 14px; }
+	.detail-content .items p span { font-size: 14px; display: inline-block; width: 50%; }
+	.detail-footer {
+		padding: 30px;
+	}
+	.detail-footer .btn { padding: 6px 20px; margin-left: 20px; }
+</style>
+<body>
+	<div class="detail-head">
+		订单明细-{$info.sn}
+	</div>
+	<div class="detail-content">
+		<div class="items">
+			<h5 style="margin-top: 0;"><strong>订单详情</strong></h5>
+			<p>
+				<span>交易时间：{$info.paytime|default='未知'}</span>
+				<span>交易门店：{$info.shop_info.code|default='无'} - {$info.shop_info.name|default='未知'}</span>
+			</p>
+			<p>
+				<span>交易渠道：门店收银</span>
+				<span>服务人员：{$info.waiter|default='无'}</span>
+			</p>
+			<?php if (isset($show_cost)): ?>
+				<p>
+					<span>订单总成本：{$info.order_goods_cost} 元</span>
+				</p>
+			<?php endif ?>
+		</div>
+		<div class="items special">
+			<h5><strong>收款信息</strong></h4>
+			<p>应收金额：{$info.amount|default=0} 元</p>
+			<p>实收金额：{$info.amount|default=0} 元&emsp;【{$info.pay_way|default='未知'}扣款：{$info.amount|default=0}元】</p>
+			<p>合计金额：{$info.old_price|default=0} 元</p>
+			<p>
+				优惠合计：	<if condition="$info.discount_info.discount_price egt 0">
+							<?php echo (- $info['discount_info']['discount_price']);  ?> 元
+							<else/>
+							+ <?php echo (- $info['discount_info']['discount_price']);  ?> 元
+							</if>
+				<if condition="!empty($info.discount_info.vip_discount)">
+					【会员折扣：- {$info.discount_info.vip_discount} 元】
+				</if>
+				<if condition="!empty($info.discount_info.eprice_discount)">
+					<if condition="$info.discount_info.discount_price egt 0">
+					&emsp;【改价优惠：<?php echo (- $info['discount_info']['eprice_discount']);  ?> 元】
+					<else/>
+					&emsp;【改价优惠：+ <?php echo (- $info['discount_info']['eprice_discount']);  ?>元】
+					</if>
+					<if condition="$info.discount_info.ticket_discount egt 0">
+						【代金券抵扣：<?php echo (- $info['discount_info']['ticket_discount']);  ?> 元】
+						<else/>
+						【代金券抵扣：+ <?php echo (- $info['discount_info']['ticket_discount']);  ?>元】
+					</if>
+				</if>
+			</p>
+		</div>
+		<div class="items">
+			<h5><strong>改价信息</strong></h5>
+
+				<table class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th>商品/服务名称</th>
+							<th>改价前</th>
+							<th>改价后</th>
+							<th>原因</th>
+						</tr>
+					</thead>
+					<tbody>
+						<if condition="isset($info.edit_price_goods) && !empty($info.edit_price_goods)">
+							<?php foreach ($info['edit_price_goods'] as $v): ?>
+								<tr>
+									<td>{$v.subtitle}</td>
+									<td>{$v.price} 元</td>
+									<td>{:round($v.price - $v.disprice,2)} 元</td>
+									<td>{$v.content}</td>
+								</tr>
+							<?php endforeach; ?>
+						<else/>
+							<tr>
+								<td class="detail-head" colspan="4" style="text-align:center;">没有改价商品信息</td>
+							</tr>
+						</if>
+					</tbody>
+				</table>
+
+		</div>
+		<div class="items">
+			<h5><strong>使用代金券</strong></h5>
+				<table class="table table-bordered table-hover">
+					<thead>
+						<tr>
+							<th>优惠券名称</th>
+							<th>价值</th>
+						</tr>
+					</thead>
+					<tbody>
+						<if condition="isset($info.ticket_used_list) && !empty($info.ticket_used_list)">
+							<?php foreach ($info['ticket_used_list'] as $v): ?>
+								<tr>
+									<td>{$v.name}</td>
+									<td>{$v.money} 元</td>
+								</tr>
+							<?php endforeach; ?>
+						<else/>
+							<tr>
+								<td class="detail-head" colspan="4" style="text-align:center;">没有使用代金券</td>
+							</tr>
+						</if>
+					</tbody>
+				</table>
+
+		</div>
+		<div class="items">
+			<h5><strong>会员信息</strong></h5>
+			<p>
+				<span>会员帐号：{$info.member_info.telephone|default='无'}</span>
+				<span>会员昵称：{$info.member_info.nickname|default='匿名用户'}</span>
+			</p>
+			<p>
+				<span>绑定门店：{$info.member_info.shop_name|default='无'}</span>
+				<span>会员等级：【{$info.member_info.level_name|default='无'}】</span>
+			</p>
+		</div>
+		<div class="items">
+			<h5><strong>消费信息</strong></h5>
+				<table class="table table-bordered table-hover">
+					<thead class="">
+						<tr>
+							<th>商品/服务名称</th>
+							<th>原价</th>
+							<th>结算价格</th>
+							<th>数量</th>
+							<if condition="$info.order_type==2">
+								<th>已退款数量</th>
+								<th>待取数量</th>
+							</if>
+							<th>小计</th>
+							<?php if (isset($show_cost)): ?>
+								<th>成本价</th>
+								<th>门店进价</th>
+							<?php endif ?>
+							<th>状态</th>
+						</tr>
+					</thead>
+					<tbody>
+						<if condition="isset($info.more_order_goods) && !empty($info.more_order_goods)">
+							<?php foreach ($info['more_order_goods'] as $v): ?>
+							<tr>
+								<td>{$v.name}</td>
+								<td>{$v.og_price!=0?'￥'.$v.og_price:'-'}</td>
+								<td>￥{$v.price|default=0}</td>
+								<td>{$v.num}</td>
+								<if condition="$info.order_type==2">
+									<td>{$v.refund_num}</td>
+									<td>{$v.dq_num}</td>
+								</if>
+								<td>￥{:round($v.price * $v.num,2)}</td>
+								<?php if (isset($show_cost)): ?>
+									<td>￥{:round($v.oprice * $v.num,2)}</td>
+									<td>￥{:round($v.faker_price * $v.num,2)}</td>
+								<?php endif ?>
+								<td>{$v.status === 1 || $v.status== 0?"正常":"退货"}</td>
+							</tr>
+							<?php endforeach; ?>
+						<else/>
+							<tr>
+								<td class="detail-head" colspan="6" style="text-align:center;">没有商品信息</td>
+							</tr>
+						</if>
+					</tbody>
+				</table>
+		</div>
+	</div>
+	<div class="detail-footer text-right">
+		<button type="button" id="refund" class="btn btn-danger return-goods">退货</button>
+		<button type="button" id="close_btn" class="btn btn-success">关闭</button>
+	</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+$(function(){
+	$('#refund').click(function(){
+		var url = '{:url('collect/refund',['id'=>$info.id])}';
+	    layer_show('订单退货',url,600);
+	})
+
+	$('#close_btn').click(function(){
+		var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+	})
+})
+</script>
+</body>
+</html>

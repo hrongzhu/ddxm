@@ -1,0 +1,354 @@
+// 设置弹出多个模态框
+$(document).on('show.bs.modal', '.modal', function (event) {
+    $(this).appendTo($('body'));
+}).on('shown.bs.modal', '.modal.in', function (event) {
+    setModalsAndBackdropsOrder();
+}).on('hidden.bs.modal', '.modal', function (event) {
+	$('.modal').css({'overflow-y': 'auto', 'overflow-x': 'hidden'});
+    setModalsAndBackdropsOrder();
+});
+
+// 设置点击模态框灰色区域 不关闭模态框
+// $('.modal').modal({backdrop: 'static', keyboard: false});
+
+
+function setModalsAndBackdropsOrder() {
+    var modalZIndex = 1040;
+    $('.modal.in').each(function (index) {
+        var $modal = $(this);
+        modalZIndex++;
+        $modal.css('zIndex', modalZIndex);
+        $modal.next('.modal-backdrop.in').addClass('hidden').css('zIndex', modalZIndex - 1);
+    });
+    $('.modal.in:visible:last').focus().next('.modal-backdrop.in').removeClass('hidden');
+}
+/**************************************************************/
+
+// 接口地址
+//var interface = 'http://192.168.25.207:82/admin'; // 本地测试
+ //var interface = 'http://localhost:89/admin'; // 本地测试
+ var interface = 'http://192.168.25.128/admin'; // 本地测试
+// var interface = 'http://localhost:82/admin'; // 本地测试
+// var interface = 'http://testbackend.ddxm661.com/admin'    // 线上测试
+// var interface = 'http://admin.ddxm661.com/admin'    // 线上正式
+// 公共ajax请求方法
+var $ajax =  function (url, data, sucF, errF, type, dataType) {
+	var type = type || 'post';
+	var dataType = dataType || 'json';
+	var durl = interface + url;
+	var index;
+	$.ajax({
+		type: type,
+		url:  durl,
+		data: data,
+		dataType: dataType,
+		beforeSend: function () {
+			index = layer.load(1);
+		},
+		success: function (res) {
+			if (res.code === 200 || res.code === '200' || res.code === '1') {
+				sucF && sucF(res.data);
+			} else {
+				errF && errF(res);
+			}
+		},
+		error: function (err) {
+			errF(err);
+		},
+		complete: function () {
+			layer.close(index);
+		}
+	})
+};
+// 换算时间成 2018-04-07 09:00:00形式
+var changeTime = function (timstamp) {
+  let time = new Date(timstamp)
+  let y = time.getFullYear()
+  let m = time.getMonth() - 0 + 1
+  let d = time.getDate()
+  let H = time.getHours()
+  let M = time.getMinutes()
+  let S = time.getSeconds()
+  m = (m + '').length === 1 ? '0' + m : m
+  d = (d + '').length === 1 ? '0' + d : d
+  H = (H + '').length === 1 ? '0' + H : H
+  M = (M + '').length === 1 ? '0' + M : M
+  S = (S + '').length === 1 ? '0' + S : S
+  return y + '-' + m + '-' + d + ' ' + H + ':' + M + ':' + S
+}
+// 根据id换取名字
+var searchNameByid = function (id, data) {
+	for (let i = 0, len = data.length; i<len; i++) {
+		if (id === data[i].id) {
+			return data[i].name
+			break;
+		}
+	}
+}
+
+// 根据名字换取id
+var searchNameByName = function (name, data) {
+	for (let i = 0, len = data.length; i<len; i++) {
+		if (name === data[i].name) {
+			return data[i].id
+			break;
+		}
+	}
+}
+/********************************************************/
+
+/***
+ * 公共数据
+ * 1. 权限
+ * 2. 列表数据
+ * 3. 获取商品数据
+ * 4. 供应商和门店仓库
+ */
+
+/***
+ * 公共方法
+ * 1. 分页 几个page
+ * 2. select datetime render
+ */
+
+let is_show = '';
+let shop_list = [];
+let supplier_list = [];
+let first_cate = [];
+let laypage, laydate;
+let invertoryList = {      // xx单列表
+	list: [],
+	show: 0
+}
+
+let productList = {      // xx单子商品列表
+	list: [],
+	show: 0,
+	status: ''
+}
+
+let productItems = {      // 待选商品列表
+	list: [],
+	show: 0
+}
+
+/***
+ * 获取初始数据
+ * @params fn   回调
+ */
+let _fnInitDatas = function (fn) {
+	layui.use(['table', 'laydate', 'form','laypage'], function(){
+		laypage = layui.laypage;
+		laydate = layui.laydate;
+		layui.form.on('select(search_type)', function(data){
+			console.log(data);
+			// 获取二级分类
+			if (data.value) {
+				$ajax('/Purchase/get_s_cate', {id: data.value}, function (rel) {
+					console.log(rel)
+					let data = '';
+					for (let i = 0, len = rel.s_list.length; i<len; i++) {
+						let v = rel.s_list[i]
+						data += `<option value=${v.id}>${v.cname}</option>`
+					}
+					data = `<option value="">请先选择一级分类</option>` + data;
+					$('.search-type2').html(data);
+					if ($('.search-type2').data('head')) {
+						layui.form.render('select','searchHeader');
+					} else {
+						layui.form.render('select','searchProduct');
+					}
+				}, function (err) {
+					$('.search-type2').html(`<option value="">请先选择一级分类</option>`);
+					if ($('.search-type2').data('head')) {
+						layui.form.render('select','searchHeader');
+					} else {
+						layui.form.render('select','searchProduct');
+					}
+					layer.msg(err.msg, {offset: '100px'})
+				}, 'POST')
+			} else {
+				$('.search-type2').html(`<option value="">请先选择一级分类</option>`);
+				if ($('.search-type2').data('head')) {
+					layui.form.render('select','searchHeader');
+				} else {
+					layui.form.render('select','searchProduct');
+				}
+			}
+		});
+		// 调拨调出仓库选择
+		layui.form.on('select(choose_shop)', function(data){
+			console.log(data);
+			if (data.value && productList.list.length && productList.can === undefined) {
+				productList.list = [];
+				productList.list.push({});
+				let list = template('productList', productList);
+				$('#product_list').html(list);
+				$('.edit-allot .list .detail .bid-amount').val('');
+				$('.edit-allot .list .detail .remark').val('');
+				$('.chooset-shop').val('');
+				$('.real-amount').val('');
+				if ($('.set-scan').hasClass('active')) {
+					$('.set-scan').removeClass('active')
+				}
+			}
+		});
+		// 退货仓库选择
+		layui.form.on('select(choose_reject)', function(data){
+			console.log(data);
+			if (data.value && productList.list.length && !productList.list.status) {
+				productList.list = [];
+				productList.list.push({});
+				let list = template('productList', productList);
+				$('#product_list').html(list);
+				$('.edit-reject .list .r-sum').val('');
+				$('.edit-reject .list .r-remark').val('');
+				if ($('.set-scan').hasClass('active')) {
+					$('.set-scan').removeClass('active')
+				}
+			}
+		});
+		// 如果存在 choose_time
+		if ($('#choose_time')) {
+			layui.laydate.render({
+			    elem: 'choose_time'
+			    ,type: 'datetime'
+			    ,max: changeTime(new Date())
+			    ,range: '~'
+			});
+		}
+		// layui 异步 保证
+		$ajax('/reject/getInitData', '', function (rel) {
+
+
+			// layer.msg(rel.is_show, {offset: '100px'});
+			console.log(rel);
+			is_show = rel.is_show;
+			shop_list = rel.shop_list;
+			supplier_list = rel.supplier_list;
+			first_cate = rel.first_cate;
+			invertoryList.show = is_show;
+			productList.show = is_show;
+			let type = '';
+			for (let i = 0, len = rel.first_cate.length; i<len; i++) {
+				let v = rel.first_cate[i]
+				type += `<option value=${v.id}>${v.cname}</option>`
+			}
+			type = `<option value="">请选择一级分类</option>` + type;
+			$('.search-type1').html(type);
+			fn && fn();
+		}, function (err) {
+			layer.msg(err.msg, {offset: '100px'})
+			// layer.msg('1111', {offset: '100px'})
+		}, 'POST')
+	})
+}
+
+// 搜索商品公共方法
+let _fnSearchProduct = function (page, uurl) {
+	let data = {
+		curPage: page,
+		goods_name: $('.search-name').val(),
+		f_cate: $('.search-type1').val(),
+		s_cate: $('.search-type2').val(),
+		shop_id: $('.choosef-shop').val()?$('.choosef-shop').val():'',
+		bar_code: $('.search-sn').val()?$('.search-sn').val():''
+	};
+	let urll = uurl || '/Reject/getPage';
+	// 获取商品信息
+	$ajax(urll, data, function (rel) {
+		console.log(rel)
+		// 商品模版
+		productItems.list = rel.data_content || [];
+		let data = template('productItem', productItems);
+		$('#productItems').html(data);
+		layui.form.render('select','searchProduct');
+		// 处理分页
+		if (!rel.data_content) {
+			if (!$('#editProduct .footer').hasClass('hidden')) {
+				$('#editProduct .footer').addClass('hidden')
+			}
+		} else {
+			if ($('#editProduct .footer').hasClass('hidden')) {
+				$('#editProduct .footer').removeClass('hidden')
+			}
+			if (page === 1) {
+				laypage.render({
+				    elem: 'productPage' //注意，这里的 test1 是 ID，不用加 # 号
+				    ,limit: rel.pageSize
+				    ,count: rel.totalItem //数据总数，从服务端得到
+				    ,jump: function (obj, first) {
+				    	if (!first) {
+				    		$('#all_choose').attr('checked',false);
+				    		_fnSearchProduct(obj.curr, urll);
+				    	}
+				    }
+				})
+			}
+		}
+		if ($('#all_choose').checked === true) {
+			$("#all_choose").prop("checked", false);
+		}
+		$('.check-box').each(function() {
+			layui.form.render('checkbox');
+		});
+		if (!rel.data_content && page === 1) {
+			layer.msg('没有搜索到商品哦~', {offset: '100px'})
+		}
+		if (f_focus) {
+			f_focus = false
+		}
+	}, function (err) {
+		productItems.list = [];
+		let data = template('productItem', productItems);
+		$('#productItems').html(data);
+		// 清掉分页
+		if (!$('#productPage').hasClass('hidden')) {
+			$('#productPage').addClass('hidden')
+		}
+		layer.msg(err.msg, {offset: '100px'})
+		if (f_focus) {
+			f_focus = false
+		}
+	}, 'POST')
+}
+
+// 商品模态框弹出事件
+$('#editProduct').on('shown.bs.modal', function () {
+	// 全选
+	layui.form.on('checkbox(allChoose)', function(data){
+	    var child = $(data.elem).parents('table').find('tbody input[type="checkbox"]');
+	    child.each(function(index, item){
+	      item.checked = data.elem.checked;
+	    });
+	    layui.form.render('checkbox');
+	});
+	// 每个选择
+	layui.form.on('checkbox(owner_one)', function(data){
+	    let allChild = $('.check-box');
+	    let num = 0;
+	    for (let i=0, len=allChild.length; i<len; i++) {
+	    	if(allChild[i].checked == false){
+				$("#all_choose").prop("checked", false);
+			} else {
+				num++;
+			}
+	    }
+	    if (num === allChild.length) {
+	    	$("#all_choose").prop("checked", true);
+	    }
+	    layui.form.render('checkbox');
+	});
+})
+
+// 商品模态框关闭事件 清除一些数据
+$('#editProduct').on('hide.bs.modal', function () {
+	productItems.list = [];
+	let data = template('productItems', productItems);
+	$('#productItems').html(data);
+	$('.search-name').val('');
+	$('.search-type1').val('');
+	$('.search-type2').val('');
+	$('.search-sn').val('');
+	$('#all_choose').attr('checked',false);
+})

@@ -1,0 +1,60 @@
+<include file="public@header" />
+<link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/webuploader/0.1.5/webuploader.css">
+</head>
+<body>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<style type="text/css">
+    body{ font-size:12px;}
+    .l-table-edit {}
+    .l-table-edit-td{ padding:4px;}
+    .l-button-submit,.l-button-test{width:80px; float:left; margin-left:10px; padding-bottom:2px;}
+    .l-verify-tip{ left:230px; top:120px;}
+</style>
+<div class="table wrap js-check-wrap">
+    <form action="{:url('admin/franchisee/update')}" id="form" method="post" class="form-horizontal  margin-top-20 js-ajax-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label"><span class="form-required">*</span>加盟商名称</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="name" name="name" value="{$info.name|default=''}">
+                <p class="help-block">加盟商名称</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="form-required">*</span>{:lang('加盟商类型')}</label>
+            <div class="col-md-6 col-sm-10">
+                <select class="form-control" name="type">
+                    <if condition="isset($info.type)">
+                        <option {$info.type == 1 ? 'selected = "selected"' : ''} value="1">直营型</option>
+                        <option {$info.type == 2 ? 'selected = "selected"' : ''}  value="2">合伙型</option>
+                        <option {$info.type == 3 ? 'selected = "selected"' : ''} value="3">加盟(独立)型</option>
+                        <else/>
+                        <option value="1">直营型</option>
+                        <option value="2">合伙型</option>
+                        <option value="3">加盟(独立)型</option>
+                    </if>
+                </select>
+            </div>
+        </div>
+        <br>
+        <input type="hidden" name="id" value="{$info.id|default=''}">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
+            </div>
+        </div>
+        <br>
+
+    </form>
+</div>
+<div style="display:none">
+    <script src="__STATIC__/js/admin.js"></script>
+</div>
+<script type="text/javascript">
+    function del(obj) {
+        var link = obj.parent("div");
+//        console.log(link);return;
+        link.remove();
+    }
+</script>
+</body>
+</html>

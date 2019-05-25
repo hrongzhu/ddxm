@@ -1,0 +1,40 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<div class="form-group">
+			<label for="nickname"><span style="color:red;"> * </span>选择券</label>
+			<select class="form-control" id="ticket">
+				<option value="" >请选择</option>
+				<foreach $ticket_list as $v>
+					<option value="{$v.id}" > {$v.ticket_name} - ( {$v.integral_price} {$v.getway.status ==1?'元':'积分'}) </option>
+				</foreach>
+			</select>
+		</div>
+		<input type="hidden" name="member_id" id="member_id" value="{$member_id}">
+		<button class="btn btn-success submits">提交</button>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript" src="/plugins/h-ui/js/H-ui.min.js"></script>
+	<script type="text/javascript">
+        $(function () {
+            $('.submits').click(function(){
+                var ticket_id = $("#ticket option:selected").val();
+                var member_id = $("#member_id").val();
+                $.post("{:url('Member/addTicket')}",{ticket_id:ticket_id,member_id:member_id},function(res){
+					if(res.code == 200){
+                        layer.msg(res.msg, {icon: 1,time: 1500}, function () {
+                            window.parent.location.reload();
+                        });
+					}else{
+                        layer.msg(res.msg, {
+                            icon: 0,
+                            time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                        });
+					}
+				})
+			});
+        });
+	</script>
+</body>
+</html>

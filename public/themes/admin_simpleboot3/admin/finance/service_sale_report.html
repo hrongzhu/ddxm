@@ -1,0 +1,96 @@
+<include file="public@header"/>
+
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <form class="well form-inline margin-top-0" method="get" action="{:url('Finance/service_sale_report')}" id="search_form">
+        <input type="text" class="form-control" name="worker_name" style="width: 120px;" <if condition="isset($worker_name)"> value="{$worker_name}"</if>
+        placeholder="员工名字">
+        <input type="text" id="time" style="width: 12%;" class="form-control" name="time"
+        <if condition="isset($add_s)&&isset($add_e)"> value="{$add_s|date="Y-m-d",###} ~ {$add_e|date="Y-m-d",###}"</if>
+        placeholder="选择时间段">
+        <select class="form-control" name="shop_id">
+            <option value="">选择店铺</option>
+            <foreach $shopDatas as $v>
+                <option <if condition="$shop_id == $v.id">selected</if> value="{$v.id}">{$v.name}</option>
+            </foreach>
+        </select>
+        <select class="form-control" name="is_online">
+            <option value="">选择来源</option>
+            <option value="1" <if condition="isset($is_online)&&$is_online==1">selected</if>>线上</option>
+            <option value="0" <if condition="isset($is_online)&&$is_online==0">selected</if>>门店</option>
+        </select>
+        <select class="form-control" name="service_id">
+            <option value="">选择服务类型</option>
+            <foreach name="service_list" item="v">
+                <option value="{$v.id}" <if condition="isset($service_id)&&$service_id==$v.id">selected</if>>{$v.sname}</option>
+            </foreach>
+        </select>
+        <input type="submit" class="btn btn-primary" value="搜索"/>
+        <a class="btn btn-danger" id="reset" href="javascript:void(0)">清空</a>
+    </form>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th>服务名称</th>
+            <th>店铺名称</th>
+            <th>员工姓名</th>
+            <th>员工工号</th>
+            <th>售出数量</th>
+            <th>退货数量</th>
+            <th>来源</th>
+            <th>时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        累计销量:{$num_all}&emsp;&emsp;&emsp;累计退货:{$refund_num_all}
+        <foreach name="datas" item="v">
+            <tr style="height: 55px;">
+                <td>{$v.sname}</td>
+                <td>{$v.shop_name}</td>
+                <td>{$v.worker_name}</td>
+                <td>{$v.workid}</td>
+                <td>{$v.num}</td>
+                <td>{$v.refund_num}</td>
+                <if condition="$v.is_online==1">
+                    <td>线上</td>
+                </if>
+                <if condition="$v.is_online==0">
+                    <td>门店</td>
+                </if>
+                <td>{:date('Y-m-d H:i',$v.update_time)}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <!--<div class="pagination" style="float: left">-->
+    <!--<button class="btn btn-success" id="selectAll">全选</button>-->
+    <!--<button class="btn btn-warning" id="closeAll" style="margin-left: 10px;">关闭订单</button>-->
+    <!--<button class="btn btn-danger" id="delAll" style="margin-left: 10px;">删除订单</button>-->
+    <!--</div>-->
+    <div style="float: left;margin-left: 10px;" class="pagination">{$page}</div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="__STATIC__/js/laydate/laydate.js"></script>
+<script type="text/javascript">
+    //------------------------------------------------
+
+    //刷新页面
+    function reloads() {
+        window.location.reload();
+    }
+
+    laydate.render({
+        elem: '#time',
+        type: 'date',
+        range: '~'
+    });
+
+    $('#reset').click(function(){
+        $("#search_form input[type!='submit']").val('')
+        $('#search_form select').val('')
+    })
+
+</script>
+</body>
+</html>

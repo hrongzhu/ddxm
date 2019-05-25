@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>调整</title>
+        <link rel="stylesheet" href="__STATIC__/pintuer/pintuer.css">
+        <link href="/plugins/layer/2.4/skin/layer.css" rel="stylesheet">
+    </head>
+    <body>
+    <div class="admin">
+        <div class="panel-body">
+        <div class="panel active">
+        <div class="panel-head">详情</div>
+        <br>
+        <div class="panel body">
+        <div class="form-x" >
+            <br>
+            <input type="hidden" id="id" value="{$info.id|default=0}">
+            <div class="form-group" id="f_1540542803125">
+                <div class="label">
+                    <label>
+                        调整方式
+                    </label>
+                </div>
+                <div class="field">
+                    <div class="button-group radio">
+                        <label class="button active">
+                            <input name="set_type" value="1" checked  type="radio" data-validate="required:请选择,length#>=1:至少选择1项"><span class="icon icon-check text-green"></span> 增加
+                        </label>
+                        <label class="button">
+                            <input name="set_type" value="2"  type="radio" data-validate="required:请选择,length#>=1:至少选择1项"><span class="icon icon-check text-green"></span> 减少
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="f_1540542756230">
+                <div class="label">
+                    <label for="mobile">
+                        类型
+                    </label>
+                </div>
+                <div class="field">
+                    <span class="input disabled">{$info.remark}</span>
+                </div>
+            </div>
+            <input type="hidden" id="type" value="{$info.type}">
+            <div class="form-group" id="f_1540542751389">
+                <div class="label">
+                    <label for="edit_num">
+                        调整数量
+                    </label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" id="edit_num" name="edit_num" maxlength="50" value="0" data-validate="required:请填写调整额度,length#<50:字数在0-50个"
+                        placeholder="">
+                </div>
+            </div>
+            <div class="form-group" id="f_1540544527135">
+                <div class="label">
+                    <label for="old_num">
+                        持有{$info.remark}
+                    </label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" disabled id="old_num" name="old_num"  value="{$info.num|default=0}" >
+                </div>
+            </div>
+
+            <div class="form-group" id="f_1540544527135">
+                <div class="label">
+                    <label for="over_num">
+                        调整后{$info.remark}
+                    </label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" disabled id="over_num" name="over_num"  value="{$info.num|default=0}" >
+                </div>
+            </div>
+
+            <div class="form-group" id="f_1540544527135">
+                <div class="label">
+                    <label for="admin_name">
+                        操作人
+                    </label>
+                </div>
+                <div class="field">
+                    <input type="text" class="input" disabled id="admin_name" name="admin_name"  value="{$info.admin_name|default=''}" >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="label">
+                    <label for="remark">调整原因</label>
+                </div>
+                <div class="field">
+                    <textarea class="input" rows="5" id="remark" cols="50" placeholder="调整的原因 必填"></textarea>
+                </div>
+            </div
+            <div class="form-button">
+                &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+                <button type="submit" id="edit" class="button bg-main">提交</button>
+            </div>
+            <br>
+        </div>
+        </div>
+        </div>
+        </div>
+    <div>
+    </body>
+    <script src="__TMPL__/public/assets/js/jquery-1.10.2.min.js"></script>
+    <script src="/plugins/layer/2.4/layer.js"></script>
+    <script src="__STATIC__/pintuer/pintuer.js"></script>
+    <script src="/plugins/h-ui.admin/js/H-ui.admin.page.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("input[name='set_type']").click(function(){
+                let num = $('#edit_num').val();
+                let old_num = $('#old_num').val();
+                let set_type = $(this).val();
+                let new_num =  Number(num) + Number(old_num);
+                if (set_type == 2) {
+                    new_num =  Number(old_num) - Number(num);
+                }
+                $('#over_num').val(new_num);
+            })
+
+            $('#edit_num').change(function(){
+                let num = $(this).val();
+                let old_num = $('#old_num').val();
+                let set_type = $("input[name='set_type']:checked").val();
+                let new_num =  Number(num) + Number(old_num);
+                if (set_type == 2) {
+                    new_num =  Number(old_num) - Number(num);
+                }
+                $('#over_num').val(new_num);
+            });
+            $('#edit').click(function(){
+                let set_type = $("input[name='set_type']:checked").val();
+                let edit_num = $('#edit_num').val();
+                let type = $('#type').val();
+                let id = $('#id').val();
+                let remark = $('#remark').val();
+                if (remark == '') {
+                    layer.msg('请填写调整原因',{icon:2,time:1500});
+                    return false;
+                }
+                if (edit_num == '') {
+                    layer.msg('请填写调整数量',{icon:2,time:1500});
+                    return false;
+                }
+                $.post("{:url('Member/updateScoreOrMoney')}",{set_type:set_type,edit_num:edit_num,type:type,id:id,remark:remark},function(res){
+                    if (res.code === 200) {
+                        layer.msg(res.msg, {icon: 1,time: 1500}, function () {
+                            window.parent.location.reload();
+                            // var index = parent.layer.getFrameIndex(window.name);
+                            // parent.layer.close(index);
+                        });
+                    }else{
+                        layer.msg(res.msg,{icon:0,time:1500});
+                    }
+                })
+            })
+        });
+    </script>
+</html>

@@ -1,0 +1,89 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('Shop/standard')}">服务及参考价格列表</a></li>
+			<li><a href="javascript:parent.openIframeLayer('{:url('Shop/standard_add')}','添加服务',{});">添加服务</a></li>
+		</ul>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="60">ID</th>
+					<th >服务图标</th>
+					<th >服务图片（封面）</th>
+					<th >服务名称</th>
+					<th >服务条码</th>
+					<th >会员参考价</th>
+					<th width="130">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="lists" item="vo">
+					<tr>
+						<td class="id">{$vo.s_id}</td>
+						<td>
+							<a href="javascript:parent.imagePreviewDialog('{$vo.icon}');">
+								<i class="fa fa-photo fa-fw"></i>
+							</a>
+						</td>
+						<td>
+							<a href="javascript:parent.imagePreviewDialog('{$vo.cover}');">
+								<i class="fa fa-photo fa-fw"></i>
+							</a>
+                        </td>
+						<td>{$vo.sname}</td>
+						<td>{$vo.bar_code}</td>
+						<td>
+							<button class="btn btn-primary" onclick="show_mprice('{$vo.s_id}',$(this))">查看</button>
+						</td>
+						<td>
+							<a href="javascript:parent.openIframeLayer('{:url('Shop/standard_edit',['s_id'=>$vo['s_id']])}','修改服务',{});">编辑</a>|
+							<a href="{:url('Shop/standard_delete',array('s_id'=>$vo['s_id']))}" class="js-ajax-delete">删除</a>
+						</td>
+					</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination" style="float: left">
+			{$page}
+		</div>
+	</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script>
+	function show_mprice(id,obj)
+	{
+        $.post("{:url('Shop/getServiceInfo')}",{'s_id':id},function(res){
+            if (res.code === 200){
+                let level_name = '';
+                let level_price = '';
+                $.each(res.data.service_price,function(i,v){  //遍历二维数组
+                    level_name += `<td class="active">${v.level_name}</td>`;
+                    level_price += `<td>${v.price}</td>`;
+                });
+                let text = '<div>' +
+						'<table class="table table-hover table-bordered">'+
+							+'<tbody>'+
+							'<tr style="height: 50px;">'+level_name+'</tr>'
+							+'<tr style="height: 50px;">'+level_price+'</tr>'+
+							'</tbody>'+
+						'</table>'+
+                    '</div>';
+                layer.open({
+                    title: '会员价',
+                    type: 1,
+                    area: ['800px', '400px'],
+                    skin: 'layui-layer-demo', //样式类名
+                    closeBtn: 1, //不显示关闭按钮
+                    anim: 0,
+                    shadeClose: true, //开启遮罩关闭
+                    content: text
+                });
+            } else{
+                layer.msg(res.msg,{icon:0});
+            }
+        })
+	}
+</script>
+</body>
+</html>

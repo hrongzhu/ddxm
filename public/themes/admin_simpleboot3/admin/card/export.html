@@ -1,0 +1,106 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li  class="active">服务卡消耗总列表</li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('Card/useServiceCardRecord')}" id="from">
+            <input type="text" class="form-control" name="mobile" style="width: 120px;"
+                   value="{:input('request.mobile/s','')}" placeholder="用户账号|电话">
+            <input type="text" class="form-control" id="slay_date" name="start_time" style="width: 120px;"
+                   value="{:input('request.start_time/s','')}" placeholder="开始时间">
+            <input type="text" class="form-control" id="elay_date" name="end_time" style="width: 120px;"
+                   value="{:input('request.end_time/s','')}" placeholder="结束时间">
+            <select name="shopid" class="form-control" id="shopids" onchange="get_worker()">
+                <option value="0">选择门店</option>
+                <foreach name="shop_list" item="v">
+                    <option {$shop_id == $v.id?"selected":""} value="{$v.id}">{$v.name}</option>
+                </foreach>
+            </select>
+            <select class="form-control" id="workid" name="workid">
+                <option value="">服务人员</option>
+            </select>
+            <select class="form-control" id="card_type" name="card_type">
+                <option value="0">服务卡类型</option>
+                <option {$card_type == 1?"selected":""} value="1">包月卡</option>
+                <option {$card_type == 2?"selected":""} value="2">次卡</option>
+            </select>
+            <select class="form-control" name="search_type">
+                <option value="1">查询数据</option>
+                <option value="2">导出数据</option>
+            </select>&emsp;&emsp;
+            <input type="submit" class="btn btn-primary" value="操作"/>
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">卡ID</th>
+                    <th>会员名称</th>
+                    <th>会员账号</th>
+					<th>服务卡名称</th>
+					<th>服务卡类型</th>
+					<th>支付方式</th>
+                    <th>服务时间</th>
+					<th>所属门店</th>
+                    <th>服务人员</th>
+					<th>服务项目</th>
+					<th>服务价格</th>
+				</tr>
+			</thead>
+			<tbody>
+			<foreach name="list" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.nickname}</td>
+					<td>{$vo.mobile}</td>
+					<td>{$vo.card_name}</td>
+					<td>{$vo.card_type==1?"包月卡":"次卡"}</td>
+					<td>{$vo.pay_way}</td>
+					<td>{:date('Y-m-d H:i:s',$vo.yytime)}</td>
+					<td>{$vo.shop_name}</td>
+					<td>{$vo.work_name}</td>
+					<td>{$vo.sname}</td>
+					<td>{$vo.price}</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script src="__STATIC__/js/laydate/laydate.js"></script>
+	<script type="text/javascript">
+	    $(function(){
+            get_worker();
+	    })
+
+		//日期时间选择器
+	    laydate.render({
+	        elem: '#slay_date'
+	        , type: 'date'
+	    });
+
+	    //日期时间选择器
+	    laydate.render({
+	        elem: '#elay_date'
+	        , type: 'date'
+	    });
+
+        function get_worker()
+        {
+            let shop_id = $('#shopids').val();
+            $.post("{:url('card/getWorkerByShop')}",{shop_id:shop_id},function(res){
+                let worker_html = '<option value="">选择服务人员</option>';
+                if(res.code == 200){
+                    $(res.data).each(function(i,v){
+                        worker_html += `<option value="${v.workid}">${v.name}</option>`;
+                    })
+                }
+                $('#workid').html(worker_html);
+            })
+        }
+
+	</script>
+</body>
+</html>

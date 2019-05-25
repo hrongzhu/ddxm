@@ -1,0 +1,151 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<li><a href="{:url('Item/type_list')}">分类列表</a></li>
+			<li><a href="{:url('Item/type_add')}">分类添加</a></li>
+			<li class="active"><a>编辑分类</a></li>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Item/type_editPost')}">
+			<div class="form-group">
+				<label for="input-user_login" class="col-sm-2 control-label"><span class="form-required">*</span>分类名称</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-user_login" name="cname" value="{$data.cname}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-user_login" class="col-sm-2 control-label"><span class="form-required">*</span>分类排序</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-user_login" name="sort" value="{$data.sort}">
+				</div>
+			</div>
+			<div class="form-group">
+			    <label class="col-sm-2 control-label">{:lang('STATUS')}</label>
+				<div class="col-md-6 col-sm-10">
+					<label class="radio-inline">
+						<php>$active_true_checked=($data['status']==1)?"checked":"";</php>
+						<input type="radio" name="status" value="1" {$active_true_checked}> {:lang('ENABLED')}
+					</label>
+					<label class="radio-inline">
+						<php>$active_false_checked=($data['status']==0)?"checked":"";</php>
+						<input type="radio" name="status" value="0" {$active_false_checked}> {:lang('DISABLED')}　　　　　　　　<b style="color: red;">注意：禁用父分类的话，子分类也会禁用</b>
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">分类主图</label>
+				<div class="col-md-6 col-sm-10">
+					<table class="table table-bordered" style="float: left;">
+	                    <!-- <?php
+                        if(!empty($list->mainPic)){
+                            $arr = json_decode($list->mainPic,1);
+                            if(is_array($arr)){
+                            foreach ($arr as $key => $value) {
+                        ?> -->
+                        <div>                               
+                            <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="mainPic">
+                            <input type="hidden" name="mainPic[]" value="<?php echo $value;?>">
+                            <a href="javascript:;" onclick="moveImg(this)">删除</a>
+                        </div>
+                        <!-- <?php
+                            }
+                            }
+                        }
+                        ?> -->
+                        <img src="http://upload.ddxm661.com{$data.thumb}" id="showPic" style="width: 80px;height: 80px;">
+                        <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="showPic">
+                        <input type="file" id="files" name="files[]" ltype="text"  multiple="multiple" />    
+                        <input type="button" value=" 上传 " onclick="more_upload()" />
+                        (最多上传1张)
+                    </table>
+	            </div>
+            </div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<input type="hidden" name="id" value="{$data.id}" />
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
+					<a class="btn btn-default" href="javascript:history.back(-1);">{:lang('BACK')}</a>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+		// 多图上传
+		function more_upload(){
+		    var i = 0;
+		    var s = '';
+		    $("img[id=mainPic]").each(function(n,e){
+		        i++;
+		    })
+		    var formData = new FormData();
+		    upfile = $("#files")[0].files;
+		    var ii = 1;
+		    $(upfile).each(function (n, e) {
+		        i++;
+		        if(i>1){
+		            alert("上传图片不能超过1张");
+		            clearInterval(s);
+		            return false;
+		        }
+		        var s = setTimeout(function () {
+		            formData.append('file', $(e)[0]);
+		            upload_img(2, formData);
+		        }, ii);
+		        ii += 1000;
+		    });
+		}
+        // 上传图片
+		function upload_img(id,formData){
+		    
+		    var file =  $("#lfile").val();
+		    // var files =  $("#files").val();
+
+		    if((file =='' || file == null) && id==1){
+		        alert("请选择上传文件");
+		        return false;
+		    }else{      
+		        var upfile = '';
+		        if(id==1){
+		            var formData = new FormData();
+		            upfile = $("#lfile")[0].files[0];
+		            formData.append('file',upfile);
+		        }
+		        $.ajax({
+		            url: "{:url('Item/uploadPic')}",
+		            type: "POST",
+		            data: formData,
+		            dataType:'json',
+		            processData : false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+		            contentType : false, // 不设置Content-type请求头
+		            success: function(data) {
+		                if(data.success==1){
+		                    // $(".imgList").append($(".imgList>div:first-child").clone());
+		                    if(id==1){
+		                        $("#thumb").val(data.msg);
+		                        $("#showThumb").attr('src',data.msg);
+		                    }else{
+		                        var img = '<div><img src="'+data.msg+'" id="mainPic" style="width:60px;height:100px;">';
+		                        img += '<input type="hidden" name="mainPic[]" value="'+data.msgurl+'"><a href="javascript:;" onclick="moveImg(this)">删除</a></div>'
+		                        $("#showPic").before(img);
+		                        $("#files").val('');
+		                        // $("#mainPic").val(data.msg);
+		                        // $("#showPic").attr('src',data.msg);
+		                    }
+		                }else{
+		                    alert(data.msg);
+		                }
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                alert("上传失败，请检查网络后重试");
+		            }
+		        });
+		    }
+		}
+		function moveImg(str){
+		    $(str).parent().remove();
+		}
+	</script>
+</body>
+</html>

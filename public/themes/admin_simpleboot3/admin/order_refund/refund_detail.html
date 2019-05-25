@@ -1,0 +1,199 @@
+<include file="public@ptheader" />
+</head>
+<body>
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>退货商品信息</span>
+		</div>
+		<div class="panel-body">
+			<table class="table table-hover table-responsive-y table-bordered">
+				<thead>
+				<tr class="bg bg-blue">
+					<th >商品图片</th>
+					<th >商品名称</th>
+					<th >销售价格（单价）</th>
+					<th >销售数量</th>
+					<th >售后数量</th>
+					<th >实付金额（总价）</th>
+				</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><img width="50px" src="{$info.order_goods_info.attr_pic}"></td>
+						<td><a href="#">{$info.order_goods_info.subtitle}</a></td>
+						<td>{$info.order_goods_info.price}</td>
+						<td>{$info.order_goods_info.buy_num}</td>
+						<td>{$info.num}</td>
+						<td>{:round($info.order_goods_info.price * $info.order_goods_info.buy_num,2)}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>退货订单信息</span>
+		</div>
+		<div class="panel-body">
+			<table class="table table-responsive-y table-hover">
+				<tr>
+					<td class="text-right">服务单号</td>
+					<td class="text-left">{$info.rf_sn}</td>
+				</tr>
+				<tr>
+					<td class="text-right" style="width: 20%">申请状态</td>
+					<td class="text-left text-red" >{$info.status.text}</td>
+				</tr>
+				<tr>
+					<td class="text-right" style="width: 20%">
+						原订单编号
+					</td>
+					<td class="text-left" >
+						 {$info.sn} <a href="{:url('order/detail',['id'=>$info.order_id])}" class="button bg-green">查看</a>
+					</td>
+				</tr>
+				<tr>
+					<td class="text-right" style="width: 20%">申请时间</td>
+					<td class="text-left" >{$info.addtime}</td>
+				</tr>
+				<tr>
+					<td class="text-right" style="width: 20%">联系人</td>
+					<td class="text-left" >{$info.nickname}</td>
+				</tr>
+				<tr>
+					<td class="text-right" style="width: 20%">用户账号</td>
+					<td class="text-left" >{$info.mobile}</td>
+				</tr>
+				<tr>
+					<td class="text-right" style="width: 20%">售后原因</td>
+					<td class="text-left" >{$info.remark}</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>核对退单金额</span>
+		</div>
+		<div class="panel-body">
+		<table class="table table-hover table-responsive-y">
+			<tr>
+				<td class="text-right">
+					商品实付金额
+				</td>
+				<td class="text-left">
+					￥ {$info.order_goods_info.price * $info.order_goods_info.buy_num}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					退运费
+				</td>
+				<td class="text-left" >
+					<if condition="$info.status.status == 0">
+						<php> $checked = $info['postage'] > 0?"checked":'';</php>
+						<php> $checked2 = $info['postage'] != 0?"checked":'';</php>
+						<div class="button-group radio" >
+							<label class="button radius-none {$checked == ''?'active':''}">
+								<input type="radio" {$checked2} name="postage" value="0"><span class="icon icon-times"></span> 不退运费
+							</label>
+							<label class="button radius-none {$checked?'active':''}">
+								<input type="radio" {$checked} name="postage" value="{$info.postage}"><span class="icon icon-check"></span> 退运费 &emsp; ￥{$info.postage|default=0}
+							</label>
+						</div>
+						<else/>
+						{$info.postage >0?'退运费':"不退运费"} 【运费 ￥{$info.postage}】
+					</if>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					确认退款金额
+				</td>
+				<td class="text-left" >
+					<div class="form-group">
+						<if condition="$info.status.status == 0">
+							<input type="text" class="input" id="zprice" name="zprice" value="{$info.amount}">
+						<else/>
+							￥{$info.amount}
+						</if>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					退款方式
+				</td>
+				<td class="text-left text-red" >
+					{$info.pay_way == 1?'微信退款':'余额退款'}
+				</td>
+			</tr>
+			<if condition="$info.status.status == 0">
+				<tr>
+					<td></td>
+					<td class="text-left" colspan="2">
+						<div class="pagination">
+							<button class="button radius-none  bg-blue" id="cancel" >取消售后</button> &emsp;&emsp;&emsp;
+							<button class="button radius-none  bg-green" id="sure" >确认退款</button>
+						</div>
+					</td>
+				</tr>
+				<else/>
+				<tr>
+					<td class="text-right">退款时间</td>
+					<td class="text-left" colspan="2">
+						<div class="pagination">
+							{$info.refund_time}
+						</div>
+					</td>
+				</tr>
+			</if>
+		</table>
+	</div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*管理员-编辑*/
+   $(function(){
+       $("input[name='postage']").click(function(){
+           let postage = $(this).val();
+           let amount = $('#zprice').val();
+           let new_num =  Number(postage) + Number(amount);
+           new_num = new_num.toFixed(2);
+           if (postage == 0 && amount >= new_num) {
+               let postages = "{$info.postage}";
+               new_num =  Number(amount) - Number(postages);
+               new_num = new_num.toFixed(2);
+           }
+           $('#zprice').val(new_num);
+       });
+
+       $('#sure').click(function () {
+           var price = $('#zprice').val();
+           var postage =$('input:radio[name="postage"]:checked').val();
+           var id = "{$info.id}";
+		   $.post("{:url('orderRefund/refundDealwith')}",{'id':id,'price':price,'postage':postage},function (res) {
+			   	if (res.code == 200){
+                    layer.msg(res.msg, {icon: 1,time:2000},function () {
+                        window.parent.location.reload();
+                    });
+				}else{
+                    layer.msg(res.msg, {icon: 0,time:1000});
+				}
+           })
+       });
+       $('#cancel').click(function () {
+           var id = "{$info.id}";
+           $.post("{:url('orderRefund/refundCancel')}",{'id':id},function (res) {
+               if (res.code === 200){
+                   layer.msg(res.msg, {icon: 1,time:2000},function () {
+                       window.parent.location.reload();
+                   });
+               }else{
+                   layer.msg(res.msg, {icon: 0,time:1000});
+               }
+           })
+       })
+   });
+</script>
+<include file="public@ptfooter"/>

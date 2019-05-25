@@ -1,0 +1,188 @@
+<include file="public@ptheader" />
+<style>
+    .detail-product {
+        padding: 30px 40px;
+    }
+    .detail-product table thead { background-color: #f5f5f5; }
+    .detail-product table thead th:nth-child(2) { width: 30%; }
+    .detail-product table thead th:nth-child(4) { width: 22%; }
+    .detail-product table label { margin-bottom: 0; }
+    .detail-product table p {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #f5f5f5;
+        border-radius: 2px;
+    }
+    .detail-product table p span {
+        width: 30%;
+        text-align: center;
+        cursor: pointer;
+    }
+    .detail-product table p input { width: 40%; text-align: center; }
+    /* .other p { color: #f56651; } */
+    .foot {
+        padding: 30px 40px;
+        text-align: right;
+    }
+    .foot .btn { margin-left: 20px; padding: 6px 20px; }
+</style>
+    <div class="panel margin-top">
+        <div class="panel-head bg-main">
+            <span>商品信息</span>
+        </div>
+        <div class="panel-body">
+            <table class="table table-responsive-y table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <!-- <th></th> -->
+                        <th>商品名称</th>
+                        <th>结算价格</th>
+                        <th>数量</th>
+                        <th>小计</th>
+                        <th>改价原因</th>
+                    </tr>
+                </thead>
+                <tbody id="datas">
+                    <if condition="!empty($info.goods_list)">
+                        <?php foreach ($info['goods_list'] as $v): ?>
+                        <tr>
+                            <td style="display: none;">
+                                <label>
+                                  <input type="text" class="input" value="{$v.id}">
+                                </label>
+                            </td>
+                            <td>{$v.subtitle}</td>
+                            <td class='price'>
+                                <input type="text" class="input"  onchange ="edit_num(this,'{$v.price}')" value="{$v.price}">
+                            </td>
+                            <td>{$v.num|default=1}</td>
+                            <td class="hj_price">
+                                ￥<span>{$v.price}</span>
+                            </td>
+                            <td>
+                                <textarea name="content" class="input">{$v.content}</textarea>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <else/>
+                        <tr>
+                            <td class="detail-head"  style="text-align:center;">没有商品信息</td>
+                        </tr>
+                    </if>
+                </tbody>
+            </table>
+            <div class="form-x form-inline margin-top">
+                <div class="form-group">
+                    <label for="pid">订单邮费：</label>
+                    <label >
+                        <input type="text" name="postage" class="input" onchange="edit_postage()" id="postage" value="{$info.postage|default=0}" placeholder="">
+                    </label>
+                    <!-- <input type="text" name="postage" class="form-control" id="postage" value="{$userInfo.postage|default=0}" placeholder=""> -->
+                </div>
+            </div>
+
+            <div class="other">
+                <p>此次改价比原价:<span class="zprice" style="font-size: 25px;color: #f56651;"></span></p>
+            </div>
+            <input type="hidden" id="order-id" value="{$info.id|default=0}">
+            <div class="foot">
+                <button type="button" onclick="submits('{:url('order/mdyPrice')}')" class="button radius-none bg-blue">确认改价</button>
+            </div>
+        </div>
+    </div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*function edit_num(obj,nums){
+        $price = $(obj).val();
+        $num = $(obj).parent().next().text();
+        $hj_price = $num * $price;
+        $(obj).parent().next().next().children().text($hj_price.toFixed(2));
+        sumPrice();
+    }*/
+
+    function edit_num(obj,nums){
+        $price = $(obj).val();
+        $(obj).parent().next().next().children().text($price);
+        sumPrice();
+        // console.log($hj_price);return;
+    }
+
+    function edit_postage(){
+        sumPrice();
+        // console.log($hj_price);return;
+    }
+
+    function submits(url)
+    {
+        var order_id = $('#order-id').val();
+        var postages = $('#postage').val();
+        var lists = {
+                order_id:order_id,
+                goods_list:[],
+                postage:postages
+            };
+            $('#datas tr').each(function(i){
+                var list = {
+                    goods_id: '',
+                    price:0,
+                    num: 0,
+                };
+                $(this).children('td').each(function(j){
+                    if (j === 0) {
+                        list.goods_id = $(this).find('input').val();
+                    }
+                    if (j === 2 ) {
+                        list.price = $(this).find('input').val();
+                    }
+                    if (j === 3 ) {
+                        list.num = $(this).text();
+                    }
+                    if (j === 5 ) {
+                        list.eprice_remark = $(this).find('textarea').val();
+                    }
+                });
+                lists.goods_list.push(list);
+            });
+        console.log(lists);
+        layer.confirm('确认无误？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post(url,{list:lists},function(res){
+                if (res.code == 200) {
+                        layer.msg(res.msg, {icon: 1,time:2000},function () {
+                            parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        });
+                    }else {
+                        layer.msg(res.msg, {icon: 0,time:2000});
+                    }
+            },'json')
+        });
+    }
+
+    function sumPrice()
+    {
+        var zprice = 0;
+        var postage = $('#postage').val();
+        $('#datas tr').each(function(i){
+            var price = 0;
+            $(this).children('td').each(function(j){
+                if (j === 4 ) {
+                    price = $(this).children().text();
+                    console.log(price);
+                }
+            });
+            zprice += parseFloat(price);
+        });
+        $yj = '{$info.amount}';
+        zzprice = (parseFloat($yj) - (parseFloat(zprice)+parseFloat(postage)));
+        if (zzprice > 0) {
+            $('.zprice').text('少了'+ zzprice.toFixed(2)+'元');
+        }else{
+            $('.zprice').text('多了'+(-zzprice.toFixed(2))+'元');
+        }
+
+    }
+</script>
+<include file="public@ptfooter">

@@ -1,0 +1,101 @@
+<include file="public@header" />
+<style type="text/css">
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle!important;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:url('Express/postageList')}">运费列表</a></li>
+        <li><a href="{:url('Express/postageAdd')}" >添加运费模板</a></li>
+    </ul>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th >模板名称</th>
+            <th >计价方式</th>
+            <th >起步(数量/重量)</th>
+            <th >起步价格</th>
+            <th >增加(数量/重量)</th>
+            <th >增加单价</th>
+            <th >地区</th>
+            <th >添加时间</th>
+            <th >是否启用</th>
+            <th >操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="v">
+            <tr style="height: 55px;" class="text-center">
+                <td>{$v.id}</td>
+                <td>{$v.temp_name}</td>
+                <td>
+                    <if condition="$v.type ==1">
+                        按重量
+                        <else/>
+                        按数量
+                    </if>
+                </td>
+                <td>{$v.first_num}</td>
+                <td>{$v.first_price}</td>
+                <td>{$v.add_num}</td>
+                <td>{$v.add_price}</td>
+                <td>重庆市</td>
+                <td>{$v.addtime}</td>
+                <td>
+                    <if condition="$v.type ==1">
+                        启用
+                        <else/>
+                        未启用
+                    </if>
+                </td>
+                <td>
+                    <a href="{:url('Express/postageEdit', ['id'=>$v.id])}">编辑</a>|
+                    <a href="javascript:void (0);" onclick="worker_del('{:url('Express/postageDel')}',{$v.id},$(this))">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div style="float: left;margin-left: 10px;" class="pagination">{$page}</div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*编辑*/
+    function add_advert(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    function edit_advert(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    //------------------------------------------------
+    //删除
+    function worker_del(url,id,obj) {
+        layer.confirm('确认要删除？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post(url, { id: id }, function(data){
+                if (data.code == 200) {
+                    var link = obj.parents("tr");
+                    link.remove();
+                    layer.msg(data.msg, {icon: 1,time:2000});
+                }else {
+                    layer.msg(data.msg, {icon: 0,time:2000});
+                }
+            });
+        });
+    }
+
+    //刷新页面
+    function reloads(){
+        window.location.reload();
+    }
+</script>
+</body>
+</html>

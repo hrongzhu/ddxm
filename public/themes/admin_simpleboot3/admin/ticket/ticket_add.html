@@ -1,0 +1,236 @@
+<include file="public@header" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/webuploader/webuploader.css">
+</head>
+<body>
+<style type="text/css">
+    body{ font-size:12px;}
+    .l-table-edit {}
+    .l-table-edit-td{ padding:4px;}
+    .l-button-submit,.l-button-test{width:80px; float:left; margin-left:10px; padding-bottom:2px;}
+    .l-verify-tip{ left:230px; top:120px;}
+    .get_way{display: none;}
+    .ticket-money{display: none;}
+</style>
+<div class="table wrap js-check-wrap">
+    <div  class="form-horizontal margin-top-20">
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label"><span class="form-required">*</span>券名称</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="name" name="name" value="">
+                <p class="help-block">券名称</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="form-required">*</span>券封面</label>
+            <div class="col-md-6 col-sm-10" id="filePicker">+ 选择封面</div>
+            <div class="col-sm-10">
+                <div id="fileList" class="uploader-list" style="margin-left: 20%;">
+                    <div>
+                        <img src="" id="headimg" style="height:80px;width:120px;margin-bottom: 10px" alt="">
+                        <input type="hidden" id="cover" name="cover" value="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="restrict_num" class="col-sm-2 control-label">单人限购数</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="restrict_num" name="restrict_num" value="">
+                <p class="help-block">单人限购数（默认不限）</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="circulation" class="col-sm-2 control-label">发行量</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="circulation" name="circulation" value="">
+                <p class="help-block">发行量(默认不限)</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="expire_date" class="col-sm-2 control-label">有效期</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="expire_date" name="expire_date" value="">
+                <p class="help-block">有效期天数（默认不过期）</p>
+            </div>
+        </div>
+        <input type="hidden" name="type" class="ticket_type" id="ticket_type" value="{$type}" >
+        <div class="form-group ticket-money">
+            <label for="money" class="col-sm-2 control-label"><span class="form-required">*</span>代金券面额</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="money" name="money" value=""/>
+                <p class="help-block"><span class="form-required">*</span>代金券面额设置之后不可修改</p>
+            </div>
+        </div>
+        <div class="form-group get_way">
+            <label class="col-sm-2 control-label"><span class="form-required">*</span>服务项目</label>
+            <div class="col-md-6 col-sm-10">
+                <select class="form-control" id="service_id" name="service_id">
+                    <foreach name="serverList" item="v">
+                        <option value="{$v.id}">{$v.sname}</option>
+                    </foreach>
+                </select>
+            </div>
+            <p class="help-block">服务项目</p>
+        </div>
+        <div class="form-group get_way">
+            <label class="col-sm-2 control-label"><span class="form-required">*</span>获取方式</label>
+            <div class="col-md-6 col-sm-10">
+                <label class="radio-inline">
+                    <input type="radio" name="get_way" value="1" > 售卖
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="get_way" value="2" checked="checked"> 兑换
+                </label>
+            </div>
+            <p class="help-block">选择获取服务券的方式</p>
+        </div>
+        <div class="form-group">
+            <label for="integral_price" class="col-sm-2 control-label"><span class="form-required">*</span>消耗</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="integral_price" name="integral_price" value="">
+                <p class="help-block">价值积分或现金</p>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="form-required">*</span>上架门店</label>
+            <div class="col-md-6 col-sm-10">
+                <if condition="$shop_list neq ''">
+                    <foreach $shop_list as $v>
+                        <input type="checkbox" name="shop_id" value="{$v.id}"> {$v.name}
+                    </foreach>
+                </if>
+                <p class="help-block">选择上架门店</p>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label class="col-sm-2 control-label"><span class="form-required">*</span>是否上架</label>
+            <div class="col-md-6 col-sm-10">
+                <label class="radio-inline">
+                    <input type="radio" name="status" value="1" > 上架
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" name="status" value="0" checked="checked"> 下架
+                </label>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button id="sure" class="btn btn-primary ">{:lang('SAVE')}</button>
+            </div>
+        </div>
+        <br>
+
+    </div>
+</div>
+
+
+<div style="display:none">
+    <script src="__STATIC__/js/admin.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/webuploader/webuploader.min.js"></script>
+</div>
+<script type="text/javascript">
+    $(function() {
+    //图片上传
+        $host = 'http://' + "<?php echo $_SERVER['HTTP_HOST']; ?>"
+        var hosts = "{$host}";
+        var uploader = WebUploader.create({
+            // 选完文件后，是否自动上传。
+            auto: true,
+            // swf文件路径
+            swf: 'https://cdn.staticfile.org/webuploader/0.1.5/Uploader.swf',
+            // 文件接收服务端。
+            server: $host+"{:url('Shop/uploadPic')}",
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#filePicker',
+            // 只允许选择图片文件。
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        //上传成功获取图片路径
+        uploader.on('uploadSuccess', function (file, res) {
+            if(res.code == 200){
+                layer.msg(res.msg, {icon: 1, time: 2000});
+                $('#cover').val(res.data.path);
+                $('#headimg').attr('src',hosts + res.data.path);
+            }else{
+                layer.msg(res.msg, {icon: 2, time: 2000});
+            }
+        });
+
+        $('#sure').click(function () {
+            var data = {
+                name:'',
+                cover:'',
+                money:0,
+                restrict_num:0,
+                circulation:0,
+                expire_date:0,
+                integral_price:0,
+                shop_id:[],
+                get_way:2,
+                service_id:0,
+                type:1,
+                status:0
+            };
+            $.each($('input:checkbox'),function(){
+                if(this.checked){
+                    data.shop_id.push($(this).val());
+                }
+            });
+            data.name = $('#name').val();
+            data.money = $('#money').val();
+            data.cover = $('#cover').val();
+            data.restrict_num = $('#restrict_num').val();
+            data.circulation = $('#circulation').val();
+            data.expire_date = $('#expire_date').val();
+            data.type = $('#ticket_type').val();
+            if (data.type == 2) {
+                data.get_way = $('input:radio[name=get_way]:checked').val();
+                data.service_id = $('#service_id').val();
+            }
+            data.integral_price = $('#integral_price').val();
+            data.status = $('input:radio[name=status]:checked').val();
+            if (data.name === ''){
+                layer.msg('请输入券名称',{icon:0,time:1500});
+                return false;
+            }
+            if (data.type == null){
+                layer.msg('请选择券类型',{icon:0,time:1500});
+                return false;
+            }
+            if (data.type === 2){
+                if (data.get_way === 0){
+                    layer.msg('请选择服务券的获取方式',{icon:0,time:1500});
+                    return false;
+                }
+            }
+            $.post("{:url('admin/ticket/ticketaddorupdate')}",{data},function (res) {
+                if (res.code === 200){
+                    layer.msg(res.msg,{icon:1,time:2000},function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }else{
+                    layer.msg(res.msg,{icon:0,time:1500});
+                }
+            });
+        });
+
+        var ticket_type = $('#ticket_type').val();
+        if (ticket_type == 2){
+            $('.get_way').show();
+            $('.ticket-money').hide();
+        }else{
+            $('.ticket-money').show();
+            $('.get_way').hide();
+        }
+    });
+</script>
+</body>
+</html>

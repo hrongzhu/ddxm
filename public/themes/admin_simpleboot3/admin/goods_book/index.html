@@ -1,0 +1,197 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li  class="active"><a href="{:url('GoodsBook/bookList')}">预订清单</a></li>
+		</ul>
+		<form class="well form-inline margin-top-20" method="get" action="{:url('GoodsBook/bookList')}">
+            选择门店:
+			<select class="form-control" name="shop_id">
+                <option value="">请选择</option>
+		        <foreach $shopDatas as $v>
+		            <option <if condition="$shop_id == $v.id">selected</if> value="{$v.id}">{$v.name}</option>
+		        </foreach>
+		    </select>
+			手机号:
+            <input type="text" class="form-control" name="mobile" style="width: 120px;" value="{$mobile|default=''}">
+			会员昵称:
+			<input type="text" class="form-control" name="nick_name" style="width: 120px;" value="{$nick_name|default=''}">
+			商品名称:
+			<input type="text" class="form-control" name="item_name" style="width: 120px;" value="{$item_name|default=''}">
+			预订单号:
+			<input type="text" class="form-control" name="sn" style="width: 120px;" value="{$sn|default=''}">
+            预订时间:
+            <input type="text" style="width: 12%;" class="form-control" name="book_time" <if condition="isset($add_s)&&isset($add_e)"> value="{$add_s|date="Y-m-d",###} ~ {$add_e|date="Y-m-d",###}"</if> id="add-time" placeholder="选择添加时间">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+        </form>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th>预订门店</th>
+					<th>手机号</th>
+					<th>会员昵称</th>
+					<th>商品名称</th>
+					<th>预订单号</th>
+					<th>预定日期</th>
+					<th>实付单价</th>
+					<th>预订数量</th>
+					<th>待取数量</th>
+					<th width="130">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<foreach name="data" item="vo">
+				<tr data-order-goods-id="{$vo.order_goods_id}" data-pay-way="{$vo.pay_way}">
+					<td>{$vo.name}</td>
+					<td>{$vo.member_mobile}</td>
+					<td class="nickname">{$vo.nickname}</td>
+					<td>{$vo.subtitle}</td>
+					<td>{$vo.sn}</td>
+					<td>{$vo.paytime|date="Y-m-d H:i:s",###}</td>
+					<td class="deal_price">{$vo.price-$vo.ticket_deduction}</td>
+					<td>{$vo.num}</td>
+					<td class="dq_num">{$vo.dq_num}</td>
+					<td>
+						<a href="javascript:void(0)" class="book_history">订取明细</a>
+						<a href="javascript:void(0)" class="refund">退款</a>
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+
+	<!--订取明细模态框-->
+	<div class="modal fade" id="historyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title">订取明细</h4>
+				</div>
+				<div class="modal-body">
+					<table class="table table-bordered" id="historyTable">
+						<thead>
+							<tr>
+								<th>时间</th>
+								<th>订单号</th>
+								<th>状态</th>
+								<th>数量</th>
+								<th>金额</th>
+								<th>成本</th>
+								<th>操作人</th>
+							</tr>
+						</thead>
+						<tbody>
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--退款模态框-->
+	<div class="modal fade" id="refundModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="checkModalLabel">退款数量</h4>
+				</div>
+				<div class="modal-body">
+					<input class="form-control" type="text" id="refund_num" placeholder="输入退款数量">
+					<div id="toast"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="refundSubmit">确定</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="__STATIC__/js/admin.js"></script>
+    <script src="__STATIC__/js/laydate/laydate.js"></script>
+
+    <script type="text/javascript">
+        function accMul(arg1,arg2)
+        {
+            var m=0,s1=arg1.toString(),s2=arg2.toString();
+            try{m+=s1.split(".")[1].length}catch(e){}
+            try{m+=s2.split(".")[1].length}catch(e){}
+            return Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)
+        }
+        laydate.render({
+            elem: '#add-time'
+            ,type: 'date',
+            range:'~'
+        });
+
+        laydate.render({
+            elem: '#check-time'
+            ,type: 'date',
+            range:'~'
+        });
+        $('.book_history').click(function(){
+            $('#historyTable tbody').html('');
+            $.post("{:url('GoodsBook/viewBookHistory')}",{'order_goods_id':$(this).parent().parent().attr('data-order-goods-id')},function(res){
+                if(res.code==200){
+                    var htmls='';
+                    $.each(res.data,function(k,v){
+                        htmls+='<tr><td>'+v.addtime+'</td><td>'+v.sn+'</td><td>'+v.type+'</td><td>'+v.num+'</td><td>'+(v.price-v.ticket_deduction)+'</td><td>'+v.oprice+'</td><td>'+v.worker+'</td></tr>';
+                    })
+                    $('#historyTable tbody').append(htmls)
+                    $('#historyModal').modal('show');
+                }
+            })
+		})
+		var nickname;
+        var dealprice;
+        var payway;
+        var dqnum;
+        var order_goods_id;
+		$('.refund').click(function () {
+		    nickname = $(this).parent().prevAll('.nickname').html();
+		    dealprice = $(this).parent().prevAll('.deal_price').html();
+			payway = $(this).parent().parent().attr('data-pay-way');
+			dqnum = $(this).parent().prev().html();
+			//console.log(dqnum);
+			order_goods_id = $(this).parent().parent().attr('data-order-goods-id');
+            // if ($(this).parent().parent().attr('data-pay-way') == 3) {
+				// $('#toast').html()
+            // }
+			$('#refundModal').modal('show');
+        })
+		$("#refund_num").on("input propertychange",function(){
+		    var html = '';
+		    if(Number($(this).val())>Number(dqnum)){
+		        layer.msg('退款数量不能大于待取货数量！');
+		        $(this).val('')
+			}else {
+				if (payway == 3) {
+					html = '预订款&yen;'+accMul(dealprice,$(this).val())+'将退回至'+nickname+'会员卡内';
+				}else{
+					html = '请退还'+nickname+'现金&yen;'+accMul(dealprice,$(this).val())+'元';
+				}
+				$('#toast').html(html)
+			}
+		})
+		$('#refundSubmit').click(function () {
+            $.post("{:url('GoodsBook/refund')}",{'order_goods_id':order_goods_id,'refund_num':$('#refund_num').val()},function(res){
+                if(res.code==200){
+                    layer.msg('退款成功',{'icon':1},function(){
+                        self.location.reload()
+					})
+                }else {
+                    layer.msg('退款失败')
+				}
+            })
+        })
+	</script>
+
+
+</body>
+</html>

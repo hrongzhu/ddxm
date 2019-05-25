@@ -1,0 +1,250 @@
+<include file="public@ptheader" />
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>订单进度</span>
+		</div>
+		<div class="panel-body">
+			<div class="step">
+				<div class="step-bar bg-green" style="width: 25%;">
+					<span class="step-point bg-green icon-check"></span>
+					<span class="button radius-none bg-green step-text">提交订单 [{:date('Y-m-d H:i',$detailInfo.addtime)}]</span>
+				</div>
+				<div class="step-bar bg-sub" style="width: 25%;">
+					<php>$ok1 = $detailInfo['pay_status'] == 1?'icon-check':'';</php>
+					<span class="step-point bg-sub {$ok1}">{$ok1?'':2}</span>
+					<php>$paytime = date('Y-m-d H:i',$detailInfo['paytime']);</php>
+					<span class="button radius-none bg-sub step-text">支付完成 [{$detailInfo.paytime?$paytime:'未支付'}]</span>
+				</div>
+				<div class="step-bar bg-green"  style="width: 25%;">
+					<php>$ok2 = $detailInfo['sendtime'] != "未发货"?'icon-check':'';</php>
+					<span class="step-point bg-green {$ok2}">{$ok2?'':3}</span>
+					<span class="button radius-none bg-green step-text">平台发货 [{$detailInfo.sendtime == "未发货" ?'未发货':$detailInfo.sendtime}]</span>
+				</div>
+				<div class="step-bar bg-sub" style="width: 25%;">
+					<php>$ok3 = $detailInfo['order_status']['status'] == 2 || $detailInfo['overtime'] != '暂无'?'icon-check':'';</php>
+					<span class="step-point bg-sub {$ok3}">{$ok3?'':4}</span>
+					<span class="button radius-none bg-sub step-text">确认收货 [{$detailInfo.overtime == '暂无'?'待收货':$detailInfo.overtime}]</span>
+				</div>
+			</div>
+			<br>
+		</div>
+	</div>
+	<!-- 订单基础信息 -->
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>订单概况</span>
+		</div>
+		<div class="panel-body">
+			<div class="alert border border-sub">
+				<div class="alert border border-mix">
+					<span>
+						<span class="text-blue text-big">订单编号：</span><span class="button radius-none bg-blue button-little">{$detailInfo.sn}</span>
+					</span>
+					<br>
+					<span>
+						<span class="text-blue text-big">下单用户：</span><span class="button radius-none bg-blue button-little">{$detailInfo.realname!= ''?$detailInfo.realname:$detailInfo.nickname}</span>
+					</span>
+					<br>
+					<span>
+						<span class="text-blue text-big">订单状态：</span><span class="text-red text-big">{$detailInfo.pay_status == 0?'待支付':$detailInfo.order_status.text}</span>
+						<span>
+							<if condition="$detailInfo.pay_status == 1">
+								<php> $show1 = in_array($detailInfo['order_status']['status'],[2,-2,-1,-7]);</php>
+								<if condition="$show1 == false">
+									<span>
+										<a class="button bg-blue button-little" href="javascript:parent.openIframeLayer('{:url('Order/expense', ['order_id'=>$detailInfo.id])}','编辑订单成本',{});">修改订单成本</a>
+									</span>
+									<span >
+										<button class="button bg-green button-little" onclick="complete_order('{:url('Order/completeOrder', ['order_id'=>$detailInfo.id])}')">完成订单</button>
+									</span>
+								</if>
+							</if>
+							<if condition="$detailInfo.pay_status == 1 && $detailInfo.order_status.status == 2">
+								<span><a class="button bg-green button-little" href="javascript:parent.openIframeLayer('{:url('Order/showExpense', ['order_id'=>$detailInfo.id])}','订单成本',{});">查看订单成本</a></span>
+							</if>
+							<if condition="$detailInfo.pay_status == 0 && $detailInfo.order_status.status != 2">
+								<span><a href="javascript:parent.openIframeLayer('{:url('Order/mdyPrice', ['id'=>$detailInfo.id])}','修改价格',{});" class="button bg-blue button-little">修改价格</a></span>
+							</if>
+						</span>
+					</span>
+					<br>
+					<span>
+						<span class="text-blue text-big">应付金额：</span>￥<span class="text-red">{$detailInfo.amount}</span>【邮费 ￥{$detailInfo.postage}】
+					</span><br>
+					<span><span class="text-blue text-big">支付方式：</span><span class="button radius-none bg-blue button-little"><if condition="$detailInfo.pay_status == 0">未支付</if><if condition="$detailInfo.pay_status == 1">{$detailInfo.pay_way}</if></span></span><br>
+					<span><span class="text-blue text-big">配送方式：</span><span class="button radius-none bg-blue button-little">{$detailInfo.send_way}</span></span><br>
+					<span>
+						<span class="text-blue text-big">物流单号：</span><span class="button radius-none bg-blue button-little">
+							<empty name="detailInfo.more_order_express">
+								暂无
+							<else />
+								{$detailInfo.more_order_express.express_sn}
+							</empty>
+						</span>
+					</span>
+					<br>
+					<span>
+						<span class="text-blue text-big">收货信息：</span><span class="border border-sub border-small border-dashed"> {$detailInfo.declare_info.name != ''?$detailInfo.declare_info.name:$detailInfo.realname} - {$detailInfo.mobile} - {$detailInfo.declare_info.idcard|default='无'} - {$detailInfo.detail_address} </span>
+						<span> &emsp;<button class="button bg-blue button-little" onclick="edit_info('{:url('Order/editReceiptInfo', ['member_id'=>$detailInfo.member_id,'order_id'=>$detailInfo.id])}')">修改收货人信息</button></span>
+					</span>
+					<br>
+				</div>
+				<br>
+				<!-- <div class="alert border border-mix" style="height: 20%;">
+					<p class="text-break"><span class="text-blue text-big">备注信息：</span>{$detailInfo.remark|default="无"}</p>
+				</div> -->
+			</div>
+		</div>
+	</div>
+
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>费用信息</span>
+		</div>
+		<div class="panel-body">
+			<div class="alert border border-sub">
+				<div class="alert border border-mix">
+					<span>
+						<span class="text-blue text-big">售价合计：</span>
+						<span class="">￥<span class="text-red">{$detailInfo.amount - $detailInfo.postage}</span></span>
+					</span>
+					&emsp;|&emsp;
+					<span>
+						<span class="text-blue text-big">订单运费：</span>
+						<span class="">￥<span class="text-red">{$detailInfo.postage}</span></span>
+					</span>
+					&emsp;|&emsp;
+					<span>
+						<span class="text-blue text-big">订单总额：</span>
+						<span class="">￥<span class="text-red">{$detailInfo.amount}</span></span>
+					</span>
+					&emsp;|&emsp;
+					<span>
+						<span class="text-blue text-big">完成金额：</span>
+						<span class="">
+							<if condition="$detailInfo.pay_status == 0">
+								订单未支付
+							<else/>
+								<if condition="$detailInfo.overtime == '未完成'">
+									订未单完成
+									<else/>
+									￥<span class="text-red">{$detailInfo.amount}</span>
+								</if>
+							</if>
+						</span>
+					</span>
+					<br>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>商品信息</span>
+		</div>
+		<div class="panel-body">
+			<div class="table-responsive-y">
+				<table class="table table-hover table-bordered">
+					<thead>
+					<tr class="bg-sub">
+						<th >商品图片</th>
+						<th >商品名称</th>
+						<th >商品专区</th>
+						<th >商品分类</th>
+						<if condition="isset($is_show)">
+							<th >成本价(单价)</th>
+						</if>
+						<th >商品现价(单价)</th>
+						<th >商品税费</th>
+						<th >商品数量</th>
+					</tr>
+					</thead>
+					<tbody>
+					<foreach $detailInfo.more_order_goods as $v>
+						<tr class="text-center">
+							<td>
+								<img src="{$v.attr_pic}" data-image="{$v.attr_pic}" width="40" height="40" data-toggle="hover" class="radius tips" />
+							</td>
+							<td><a href="#">{$v.subtitle}</a></td>
+							<td>{$v.type_id}</td>
+							<td>{$v.cate_name}</td>
+							<if condition="isset($is_show)">
+								<td>{$v.oprice}</td>
+							</if>
+							<td>{$v.price}</td>
+							<td>{$v.suiprice}</td>
+							<td>{$v.num}</td>
+						</tr>
+					</foreach>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<if condition="isset($is_show)">
+		<div class="panel margin-top table-responsive-y">
+			<div class="panel-head bg-main">
+				<span>订单操作记录</span>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive-y">
+					<table class="table table-hover table-bordered">
+						<thead>
+						<tr class="bg-sub">
+							<th>操作者</th><th>订单状态</th><th>付款状态</th><th>日志(备注)</th><th>操作时间</th>
+						</tr>
+						</thead>
+						<tbody>
+							<foreach $orderlogs as $vs>
+								<tr>
+									<td>{$vs.name}</td>
+									<td>{$vs.order_status['text']}</td>
+									<td>{$vs.pay_status}</td>
+									<td>{$vs.logs}({$vs.content?$vs.content:''})</td>
+									<td>{$vs.addtime}</td>
+								</tr>
+							</foreach>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</if>
+	<br>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*管理员-编辑*/
+    function admin_edit(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    function edit_info(url){
+        layer_show('修改收货信息',url,600,500);
+    }
+
+    function complete_order(url){
+    	$.get(url, {}, function(data){
+    		if(data.code == 200){
+                layer.msg(data.msg, {icon: 1,time:2000},function () {
+                        // window.opener.location.reload();
+                        window.location.reload();
+                    });
+
+            }else{
+                layer.msg(data.msg, {icon: 0,time:2000});
+            }
+    	},'json');
+    }
+
+    function show_express(url)
+    {
+    	layer_show('查看物流',url)
+    }
+
+    function show_pic(str){
+        layer_show('身份证照片',str,800,400);
+	}
+</script>
+<include file="public@ptfooter">

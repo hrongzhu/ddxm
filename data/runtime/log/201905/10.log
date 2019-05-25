@@ -1,0 +1,8 @@
+---------------------------------------------------------------
+[ 2019-05-10T09:41:42+08:00 ] 192.168.25.207 192.168.25.207 GET /admin/collect/orderlist.html
+[ info ] 192.168.25.207:82/admin/collect/orderlist.html [运行时间：25.290447s][吞吐率：0.04req/s] [内存消耗：3,170.41kb] [文件加载：83]
+[ error ] [2006]SQLSTATE[HY000] [2006] MySQL server has gone away[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:293]
+---------------------------------------------------------------
+[ 2019-05-10T10:03:47+08:00 ] 192.168.25.207 192.168.25.87 POST /admin/shop/setdeliveryarea.html
+[ info ] 192.168.25.207:82/admin/shop/setdeliveryarea.html [运行时间：1.149066s][吞吐率：0.87req/s] [内存消耗：2,551.66kb] [文件加载：80]
+[ error ] [8]未定义数组索引: location_list[E:\php\work\backend\app\admin\controller\ShopController.php:199]

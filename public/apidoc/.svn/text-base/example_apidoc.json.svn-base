@@ -1,0 +1,25 @@
+{
+  "name": "API接口",
+  "version": "1.0.0",
+  "title": "捣蛋熊猫接口文档",
+  "url": "http://test.newddxm.com/index.php/V3",
+  "sampleUrl" : "http://testapp.jbaobao.com/index.php/V3/",
+  "header": {
+    "title": "My own header title",
+    "filename": "header.md"
+  },
+  "footer": {
+    "title": "My own footer title",
+    "filename": "footer.md"
+  },
+  "order": [
+    "评论",
+    "TEST",
+    "API"
+  ],
+  "template": {
+    "withCompare":false,
+    "forceLanguage":"zh_cn",
+    "withGenerator":false
+  }
+}

@@ -1,0 +1,20 @@
+---------------------------------------------------------------
+[ 2019-05-14T09:44:09+08:00 ] 192.168.25.103 192.168.25.87 GET /admin/collect/orderlist.html?sn=155775646210&mobile=&start_time=&end_time=&pay_way=&workid=
+[ info ] 192.168.25.103/admin/collect/orderlist.html?sn=155775646210&mobile=&start_time=&end_time=&pay_way=&workid= [运行时间：2.759158s][吞吐率：0.36req/s] [内存消耗：2,967.80kb] [文件加载：84]
+[ error ] [1045]SQLSTATE[HY000] [1045] Access denied for user 'root'@'125.82.188.88' (using password: YES)[D:\wwwroot\backend\simplewind\thinkphp\library\think\db\Connection.php:293]
+---------------------------------------------------------------
+[ 2019-05-14T19:29:21+08:00 ] 192.168.25.103 192.168.25.207 GET /admin/finance/service_sale_report.html
+[ info ] 192.168.25.103/admin/finance/service_sale_report.html [运行时间：220.998640s][吞吐率：0.00req/s] [内存消耗：2,888.36kb] [文件加载：87]
+[ error ] [1]Maximum execution time of 60 seconds exceeded[D:\wwwroot\backend\simplewind\thinkphp\library\think\db\Connection.php:379]
+---------------------------------------------------------------
+[ 2019-05-14T19:29:21+08:00 ] 192.168.25.103 192.168.25.207 GET /admin/finance/sale_report.html
+[ info ] 192.168.25.103/admin/finance/sale_report.html [运行时间：220.332602s][吞吐率：0.00req/s] [内存消耗：2,420.22kb] [文件加载：81]
+[ error ] [1]Maximum execution time of 60 seconds exceeded[D:\wwwroot\backend\simplewind\thinkphp\library\think\Session.php:106]
+---------------------------------------------------------------
+[ 2019-05-14T19:29:21+08:00 ] 192.168.25.103 192.168.25.207 GET /admin/finance/finance_shop.html
+[ info ] 192.168.25.103/admin/finance/finance_shop.html [运行时间：219.345546s][吞吐率：0.00req/s] [内存消耗：2,420.25kb] [文件加载：81]
+[ error ] [1]Maximum execution time of 60 seconds exceeded[D:\wwwroot\backend\simplewind\thinkphp\library\think\Session.php:106]
+---------------------------------------------------------------
+[ 2019-05-14T19:43:46+08:00 ] 192.168.25.103 192.168.25.103 GET /admin/finance/sale_report.html
+[ info ] 192.168.25.103/admin/finance/sale_report.html [运行时间：60.157441s][吞吐率：0.02req/s] [内存消耗：4,998.84kb] [文件加载：86]
+[ error ] [1]Maximum execution time of 60 seconds exceeded[D:\wwwroot\backend\simplewind\thinkphp\library\think\db\Connection.php:379]

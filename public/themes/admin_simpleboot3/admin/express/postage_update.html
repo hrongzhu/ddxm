@@ -1,0 +1,103 @@
+<include file="public@header" />
+<link rel="stylesheet" type="text/css" href="https://cdn.staticfile.org/webuploader/0.1.5/webuploader.css">
+</head>
+<body>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<style type="text/css">
+    body{ font-size:12px;}
+    .l-table-edit {}
+    .l-table-edit-td{ padding:4px;}
+    .l-button-submit,.l-button-test{width:80px; float:left; margin-left:10px; padding-bottom:2px;}
+    .l-verify-tip{ left:230px; top:120px;}
+</style>
+<div >
+    <form action="{:url('admin/express/update')}" id="form" method="post" class="form-horizontal  margin-top-20 js-ajax-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">模板名称</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" class="form-control" id="name" name="temp_name" value="{$info.temp_name|default=''}">
+                <p class="help-block">模板名称</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">计费类型</label>
+            <div class="col-md-6 col-sm-10">
+                <if condition="isset($info) && !empty($info)">
+                    <select name="type" class="form-control">
+                        <option value="1" {($info.type == 1)?'selected':''}>按重量</option>
+                        <option value="2" {($info.type == 2)?'selected':''}>按数量</option>
+                    </select>
+                <else/>
+                    <select name="type" class="form-control">
+                        <option value="1" >按重量</option>
+                        <option value="2" >按数量</option>
+                    </select>
+                </if>
+                <p class="help-block">计费类型</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">起步(数量/重量)</label>
+            <div class="col-md-6 col-sm-10">
+                    <input type="text" name="first_num" value="{$info.first_num|default='0'}">
+                <p class="help-block">数量（件|个）/重量(kg</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">起步价格</label>
+            <div class="col-md-6 col-sm-10">
+                    <input type="text" name="first_price" value="{$info.first_price|default='0'}">
+                <p class="help-block">起步价格</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">增加(数量/重量)</label>
+            <div class="col-md-6 col-sm-10">
+                    <input type="text" name="add_num" value="{$info.add_num|default='0'}">
+                <p class="help-block">数量（件|个）/重量(kg</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">增加单价</label>
+            <div class="col-md-6 col-sm-10">
+                    <input type="text" name="add_price" value="{$info.add_price|default='0'}">
+                <p class="help-block">增加单价</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">是否启用</label>
+            <label>
+                    <input type="radio" name="status" value="1" <if condition="isset($info)"><if condition="$info.status == 1">checked</if><else/>checked</if>>启用
+                </label>
+                <label>
+                    <input type="radio" name="status" value="0" <if condition="isset($info)"><if condition="$info.status == 0">checked</if></if>>禁用
+                </label>
+        </div>
+        <!-- <div class="form-group">
+            <label class="col-sm-2 control-label">城市地区</label>
+            <div class="col-md-6 col-sm-10">
+                <input type="text" name="city" value="">
+                <p class="help-block">广告类型</p>
+            </div>
+        </div> -->
+        <br>
+        <input type="hidden" name="id" value="{$info.id|default=''}">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
+            </div>
+        </div>
+        <br>
+
+    </form>
+</div>
+<div style="display:none">
+    <script src="__STATIC__/js/admin.js"></script>
+    <script type="text/javascript" src="https://cdn.staticfile.org/webuploader/0.1.5/webuploader.js"></script>
+</div>
+<script type="text/javascript">
+
+
+</script>
+</body>
+</html>

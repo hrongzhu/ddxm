@@ -1,0 +1,85 @@
+<include file="public@header" />
+<style type="text/css">
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle!important;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:url('Advert/advertList')}">广告列表</a></li>
+        <li><a href="javascript:void (0);" onclick="add_advert('添加广告','{:url('Advert/advertAdd')}',800,800)">添加广告</a></li>
+    </ul>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th >店铺名称</th>
+            <th >广告位名称</th>
+            <th >广告类型</th>
+            <th >宽度</th>
+            <th >高度</th>
+            <th >添加时间</th>
+            <th >操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="v">
+            <tr style="height: 55px;" class="text-center">
+                <td>{$v.id}</td>
+                <td>{:empty($v.shop_name)?'商城':$v.shop_name}</td>
+                <td>{$v.name}</td>
+                <td>{$v.adtype}</td>
+                <td>{$v.width} px</td>
+                <td>{$v.height} px</td>
+                <td>{$v.addtime}</td>
+                <td>
+                    <!-- <a href="javascript:void (0);" onclick="edit_advert('编辑广告','{:url('Advert/advertEdit', ['id'=>$v.id])}',1000,800)">编辑详情</a>| -->
+                    <!--<a href="javascript:void (0);" onclick="scheduling('员工排班','{:url('Advert/scheDuLing', ['id'=>$v.id])}',1000,800)">员工排班</a>|-->
+                    <a href="{:url('Advert/advertEdit', ['id'=>$v.id])}" >编辑详情</a>|
+                    <a href="javascript:void (0);" onclick="worker_del('{:url('Advert/advertDel')}',{$v.id},$(this))">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div style="float: left;margin-left: 10px;" class="pagination">{$page}</div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*编辑*/
+    function add_advert(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    function edit_advert(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    //------------------------------------------------
+    //删除
+    function worker_del(url,id,obj) {
+        layer.confirm('确认要删除？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post(url, { id: id }, function(data){
+                if (data.code == 200) {
+                    var link = obj.parents("tr");
+                    link.remove();
+                    layer.msg(data.msg, {icon: 1,time:2000});
+                }else {
+                    layer.msg(data.msg, {icon: 0,time:2000});
+                }
+            });
+        });
+    }
+
+    //刷新页面
+    function reloads(){
+        window.location.reload();
+    }
+</script>
+</body>
+</html>

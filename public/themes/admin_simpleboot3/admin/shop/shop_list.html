@@ -1,0 +1,299 @@
+<include file="public@header" />
+<style type="text/css">
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle!important;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:url('shop/shopList')}">门店列表</a></li>
+        <li><a href="{:url('shop/addOrUpdate')}">添加门店</a></li>
+    </ul>
+    <!--<form class="well form-inline margin-top-0" method="get" action="{:url('Order/orderList',['order_status' => isset($order_status) ? $order_status : ""])}">-->
+    <!--订单号:-->
+    <!--<input type="text" class="form-control" name="sn" style="width: 120px;" value="{:input('request.sn/s','')}" placeholder="请输入订单号">-->
+    <!--商品名称:-->
+    <!--<input type="text" class="form-control" name="subtitle" style="width: 120px;" value="{:input('request.subtitle/s','')}" placeholder="请输入商品名">-->
+    <!--购买人:-->
+    <!--<input type="text" class="form-control" name="nickname" style="width: 120px;" value="{:input('request.nickname/s','')}" placeholder="请输入购买人">-->
+    <!--<input type="submit" class="btn btn-primary" value="搜索" />-->
+    <!--<a class="btn btn-danger" href="{:url('Order/orderList',['order_status' => isset($order_status) ? $order_status : ""])}">清空</a>-->
+    <!--</form>-->
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th >门店名称</th>
+            <th >门店编号</th>
+            <th>加盟商</th>
+            <th >详细地址</th>
+            <th >添加时间</th>
+            <th >操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="shopList" item="v">
+            <tr style="height: 55px;">
+                <td>{$v.id}</td>
+                <td>{$v.name}</td>
+                <td>{$v.code}</td>
+                <td>{$v.franchisee.name}</td>
+                <td>{:empty($v.detail_address)?$v.location_address:$v.detail_address}</td>
+                <td>{$v.addtime}</td>
+                <td>
+                    <a href="{:url('Shop/addOrUpdate', ['shop_id'=>$v.id])}">编辑详情</a>|
+                    <a href="javascript:void (0);" id="level_set" onclick="level_set({$v.id})" data-target="#myModal">设置等级</a>|
+                    <!-- <a href="javascript:void (0);" id="recharge_set" onclick="recharge_set({$v.id})" data-target="#myModal">设置充值面额</a>| -->
+                    <a href="javascript:parent.openIframeLayer('{:url('Shop/servicePriceSet',['id'=>$v.id])}');">设置服务价格</a>|
+                    <a href="javascript:void (0);" onclick="setDeliveryArea('{:url('Shop/setDeliveryArea',['id'=>$v.id])}')">设置配送范围</a>|
+                    <a href="javascript:void (0);" onclick="generate_qrcode('{:url('Shop/createQrcode')}',{$v.id})">生成门店二维码</a>|
+                    <a href="javascript:void (0);" onclick="del_shop('{:url('Shop/del')}',{$v.id})">删除</a>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination" style="float: left">
+        {$page}
+    </div>
+
+</div>
+
+
+<!--等级设置模态框-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">设置等级标准</h4>
+            </div>
+                <form action="{:url('admin/shop/updata_level_price')}" id="form" method="post" class="form-horizontal  margin-top-20 js-ajax-form" enctype="multipart/form-data">
+            <div class="modal-body" id="level-set-modal">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="submit" class="btn btn-primary js-ajax-submit" id="level_price_save">保存</button>
+            </div>
+                </form>
+        </div>
+    </div>
+</div>
+
+<!--充值面额设置模态框-->
+<div class="modal fade" id="rechargeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="rechargeModalLabel">设置充值面额</h4>
+            </div>
+            <div class="modal-body" id="recharge-set-modal">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>面额</th>
+                    <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <button class='btn btn-primary add-recharge-price'>添加面额</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="recharge-save">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    var shop_id ;
+    //设置服务及价格
+    $('#service-price-set').click(function(){
+        var shopId = $(this).attr('data-shop-id');
+        alert(shopId);
+    })
+
+    //设置等级
+    function level_set(id){
+        $.post("{:url('Shop/level_set')}",{'id':id},function (res) {
+            if(res.code==1){
+                var htmls = '<input type="hidden" name="shop_id" value="'+id+'">';
+                var level_list = res.data.level_list;
+                var level_standard = res.data.level_standard;
+                $.each(level_list,function(k,v){
+                    if(level_standard!=null){
+                        htmls+='<div class="form-group">\n' +
+                            '            <label for="" class="col-sm-2 control-label"><span class="form-required">*</span>'+v.level_name+'</label>\n' +
+                            '            <div>\n' +
+                            '                <input type="text" data_level_id="'+v.id+'"name="'+v.id+'" class="form-control level_price_input" value="'+level_standard[v.id]+'">\n' +
+                            '            </div>\n' +
+                            '        </div>';
+                    }else{
+                        htmls+='<div class="form-group">\n' +
+                            '            <label for="" class="col-sm-2 control-label"><span class="form-required">*</span>'+v.level_name+'</label>\n' +
+                            '            <div>\n' +
+                            '                <input type="text" data_level_id="'+v.id+'"name="'+v.id+'" class="form-control level_price_input" placeholder="输入积分标准">\n' +
+                            '            </div>\n' +
+                            '        </div>';
+                    }
+                })
+                $('#level-set-modal').html(htmls);
+            }
+            $('#myModal').modal('show');
+        })
+    }
+
+    //设置充值面额
+    function recharge_set(id){
+        shop_id = id;
+        $.post("{:url('Recharge/getRecharge')}",{
+            'id':id
+        },function(res){
+            var htmls = '';
+            if (res.code == 1) {
+                $.each(res.data,function(k,v){
+                    htmls+="<tr><td>"+v.id+"</td><td class='recharge-price'>"+v.price+"</td><td><a href='javascript:void(0)' class='recharge_del'>删除</a></td></tr>"
+                })
+                $('#recharge-set-modal tbody').html(htmls);
+                $('#rechargeModal').modal('show');
+            }else {
+                layer.msg('该店还未设置充值面额,请尽快添加！',{'icon':2},function(){
+                    $('#rechargeModal').modal('show');
+                })
+            }
+
+        })
+    }
+
+    //添加充值面额
+    $('body').on('click','.add-recharge-price',function(){
+        var last_id = $('#recharge-set-modal tbody tr:last').find('td:first').text();
+        var htmls = "<tr><td>"+(parseInt(last_id)+1)+"</td><td class='recharge-price added'>双击此单元格添加面额</td><td><a href='javascript:void(0)' class='recharge_del'>删除</a></td></tr>";
+        $('#recharge-set-modal tbody').append(htmls)
+    })
+
+    //表格双击可编辑
+    $('body').on('click','.recharge-price',function () {
+        var old_value = $(this).text();
+        if(!$(this).is('.input')){
+            $(this).addClass('input').html('<input type="text" value="'+ $.trim($(this).text()) +'" />').find('input').focus().blur(function(){
+                var new_value = $(this).val();
+                if(new_value !== old_value){
+                    $(this).parent().removeClass('input').html($(this).val() || 0);return;
+                }
+            });
+        }
+    }).hover(function(){
+        $(this).addClass('hover');
+    },function(){
+        $(this).removeClass('hover');
+    });
+
+    //保存充值金额
+    $('#recharge-save').click(function(){
+        var price = {};
+        $('.recharge-price').each(function(){
+            price[$(this).prev('td').text()] = $.trim($(this).text())
+        })
+        $.post("{:url('Recharge/addRecharge')}",{
+            'id':shop_id,
+            'price':price
+        },function (res) {
+            if(res.code==200){
+                layer.msg(res.msg,{'icon':1},function(){
+                    window.location.reload()
+                })
+            }else {
+                layer.msg(res.msg,{'icon':2})
+            }
+        })
+    })
+
+    //删除一个充值面额
+    $('body').on('click','.recharge_del',function(){
+        var td = $(this).parent();
+        var tr = td.parent();
+        var id = tr.find('td').first().text();
+        if(td.prev('td').hasClass('added')){
+            tr.remove()
+        }else {
+            $.post("{:url('Recharge/delRecharge')}",{
+                'id':id
+            },function(res){
+                if(res.code==200){
+                    layer.msg(res.msg,{'icon':1},function(){
+                        tr.remove();
+                    })
+                }else {
+                    layer.msg(res.msg,{'icon':2})
+                }
+            })
+        }
+    })
+
+    //输入校验
+    $('div.modal-body').on('blur','input.level_price_input',function(){
+       if(isNaN(parseInt($(this).val()))) {
+            layer.msg('只能输入数字！', {icon: 2, time: 2000})
+        }
+    })
+
+    /*编辑*/
+    function edit_detail(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    /*编辑*/
+    function add_shop(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+
+    function generate_qrcode(url,id){
+        $.post(url, { shop_id: id }, function(data){
+            if (data.code == 200) {
+                layer.msg(data.msg, {icon: 1,time:1000});
+            }else {
+                layer.msg(data.msg, {icon: 0,time:1000});
+            }
+        });
+    };
+
+    function setDeliveryArea(url)
+    {
+        layer_show('设置配送范围',url,1000,800);
+    }
+
+    function del_shop(url,id){
+        layer.confirm('确认要删除？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post(url, { shop_id: id }, function(data){
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1,time:1000});
+                    setTimeout('reloads()', 2000);
+                }else {
+                    layer.msg(data.msg, {icon: 0,time:1000});
+                }
+            });
+        });
+    };
+    //------------------------------------------------
+
+    //刷新页面
+    function reloads(){
+        window.location.reload();
+    }
+</script>
+</body>
+</html>

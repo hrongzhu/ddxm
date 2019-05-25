@@ -1,0 +1,244 @@
+<include file="public@ptheader" />
+<div class="panel-body table-responsive-y">
+    <div class="panel-head bg-main">
+        <span>商品基本信息:</span>
+    </div>
+    <table class="table table-hover table-bordered table-striped panel">
+
+            <tr>
+                <th >ID</th>
+                <th >商品ID</th>
+                <th>商品名称</th>
+                <th>商品价格</th>
+                <th>数量</th>
+                <th>总价</th>
+                <th>发货仓库选择</th>
+                <th>成本价</th>
+                <th>门店进价（虚拟成本）</th>
+            </tr>
+        <tbody id="goods-list">
+            <volist name = "goods_list" id ="v">
+            <tr>
+                <td>{$v.id}</td>
+                <td>{$v.item_id}</td>
+                <td>{$v.subtitle}</td>
+                <td>{$v.price}</td>
+                <td>{$v.num}</td>
+                <td>{$v.num * $v.price}</td>
+                <if condition="$v.shop_id == 0">
+                    <td>
+                        <select class="input" onchange="getPrice($(this))" >
+                            <option value="0" selected='selected'>不选择库存</option>
+                            <option value="{$v.shop_info.id}">{$v.shop_info.name}【{$v.stock}】</option>
+                        </select>
+                    </td>
+                <else>
+                    <td>
+                        <if condition="$v.is_stock == 0 && $v.shop_id == 0">
+                            没有库存
+                        <else/>
+                            <select class="input" onchange="getPrice($(this))" >
+                                <option value="0">不选择库存</option>
+                                <option value="{$v.shop_info.id}" {$v.shop_id == $v.shop_info.id?"selected='selected'":""}>{$v.shop_info.name}【{$v.stock}】</option>
+                            </select>
+                        </if>
+                    </td>
+                </if>
+                <td><input type="text" class="input cost-price"  value="{$v.cost_price|default='0.00'}" placeholder="0.00"></td>
+                <td><input type="text" class="input faker-price"  value="{$v.faker_price|default='0.00'}"  placeholder="0.00"></td>
+            </tr>
+        </volist>
+    </tbody>
+    </table>
+    <br>
+    <div class="form-x form-inline">
+            <div class="form-group">
+                <label for="pid">物流公司：</label>
+                <lable>
+                    <select class="input" name="express_id" id="express_id" >
+                         <option value="">选择物流公司</option>
+                         <if condition="$orderExpress neq null">
+                             <foreach $expressInfo as $v>
+                                 <option  {$orderExpress.express_name == $v->express_name ? 'selected = "selected"' : ''} value="{$v->id}">{$v->express_name}</option>
+                             </foreach>
+                             <else/>
+                             <foreach $expressInfo as $v>
+                                 <option  value="{$v->id}">{$v->express_name}</option>
+                             </foreach>
+                         </if>
+                     </select>
+                </lable>
+            </div> &emsp;
+            <label for="pid">快递单号：</label>
+            <lable>
+                <div class="form-group">
+                      <input type="text" class="input" name="express_sn" id="express_sn"  value="{$orderExpress.express_sn}" placeholder="快递单号">
+                </div>
+            </lable>
+
+            <div class="margin-top">
+                <if condition="$orderExpress.id == null">
+                    <button id="delive" class="button bg-green">确认发货</button>
+                    <button id="save" class="button bg-main">保存数据</button>
+                <else/>
+                    <button id="delive" class="button bg-green">更新物流</button>
+                </if>
+            </div>
+        </div>
+    <input type="hidden" class="input" name="order_id" id="order_id"  value="{$order_id}" placeholder="">
+    <input type="hidden" class="input" name="orderExpress_id" id="orderExpress_id"  value="{$orderExpress.id}" placeholder="">
+    </div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    $('#delive').click(function(){
+        $express_id = $('#express_id').val();
+        $orderExpress_id= $('#orderExpress_id').val();
+        $express_sn =  $('#express_sn').val();
+        $order_id = $('#order_id').val();
+        var lists = {
+            order_id:$order_id,
+            goods_list:[],
+            express_data:{express_id:$express_id,orderExpress_id:$orderExpress_id,express_sn:$express_sn}
+        };
+        $('#goods-list tr').each(function(i){
+            var list = {
+                id:0,
+                item_id:0,
+                num:0,
+                shop_id:0,
+                cost_price: 0,
+                faker_price: 0,
+                send_by_purchase:1
+            };
+            $(this).children('td').each(function(j){
+                if (j === 0) {
+                    list.id = $(this).text();
+                }
+                if (j === 1 ) {
+                    list.item_id = $(this).text();
+                }
+                if (j === 4 ) {
+                    list.num = $(this).text();
+                }
+                if (j === 6 ) {
+                    if ( $(this).text() == '没有库存') {
+                        list.shop_id = 0;
+                    }else{
+                        list.shop_id = $(this).find('select option:selected').val();
+                    }
+                    if($(this).find('select option:selected').val()==0){
+                        list.send_by_purchase = 0;
+                    }
+                }
+                if (j === 7 ) {
+                    list.cost_price = $(this).find('input').val();
+                }
+                if (j === 8 ) {
+                    list.faker_price = $(this).find('input').val();
+                }
+            });
+            lists.goods_list.push(list);
+        });
+        // console.log(lists);return false;
+        $.post('{:url("Order/deliver")}', {lists}, function(data){
+            if (data.code == 200) {
+                layer.msg(data.msg, {icon: 1,time: 1500},function(){
+                    var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                });
+            }else {
+                layer.msg(data.msg, {icon: 0,time: 1500});
+            }
+        },'json');
+    });
+
+    //保存数据
+    $('#save').click(function(){
+        $order_id = $('#order_id').val();
+        var lists = {
+            order_id:$order_id,
+            goods_list:[]
+        };
+        $('#goods-list tr').each(function(i){
+            var list = {
+                order_goods_id:0,
+                item_id:0,
+                num:0,
+                shop_id:0,
+                cost_price: 0,
+                faker_price: 0
+            };
+            $(this).children('td').each(function(j){
+                if (j === 0) {
+                    list.order_goods_id = $(this).text();
+                }
+                if (j === 1 ) {
+                    list.item_id = $(this).text();
+                }
+                if (j === 4 ) {
+                    list.num = $(this).text();
+                }
+                if (j === 6 ) {
+                    if ( $(this).text() == '没有库存') {
+                        list.shop_id = 0;
+                    }else{
+                        list.shop_id = $(this).find('select option:selected').val();
+                    }
+                }
+                if (j === 7 ) {
+                    list.cost_price = $(this).find('input').val();
+                }
+                if (j === 8 ) {
+                    list.faker_price = $(this).find('input').val();
+                }
+            });
+            lists.goods_list.push(list);
+        });
+        // console.log(lists);return false;
+        $.post('{:url("Order/saveOrderTempData")}', {lists}, function(data){
+            if (data.code == 200) {
+                layer.msg(data.msg, {icon: 1,time: 1500},function(){
+                   var index = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(index);
+                });
+            }else {
+                layer.msg(data.msg, {icon: 0,time: 1500});
+            }
+        },'json');
+    });
+
+    function getPrice(obj){
+        $shop_id = obj.val();
+        if ($shop_id > 0) {
+            var stockObj = obj.text();
+            $start = stockObj.indexOf('【');
+            $end = stockObj.indexOf('】');
+            var stock = stockObj.substring($start +1,$end);
+            var num = obj.parent().prev().prev().text();
+            var item_id = obj.parent().parent().children().first().next().text();
+            var order_id = $("#order_id").val();
+            if (parseInt(stock) < parseInt(num)) {
+                layer.open({
+                      title: '温馨提示'
+                      ,content: '库存不足，请选择其他方式发货'
+                    });
+                obj.find('option').first().prop("selected", 'selected');
+                obj.parent().next().children().val('0');
+                obj.parent().next().next().children().val('0');
+                return false;
+            }
+            $.post("{:url('order/getItemCostPriceInStock')}", {"order_id":order_id,'item_id':item_id}, function(res){
+                var num = obj.parent().prev().prev().text();
+                obj.parent().next().children().val(res.data.cost_price * num);
+                obj.parent().next().next().children().val(res.data.faker_price * num);
+            })
+        }else{
+            obj.parent().next().children().val(0);
+            obj.parent().next().next().children().val(0)
+        }
+    }
+
+
+
+</script>
+<include file="public@ptfooter" />

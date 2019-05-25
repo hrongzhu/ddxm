@@ -1,0 +1,214 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<ul class="nav nav-tabs">
+			<li><a href="{:url('Item/type_list')}">分类列表</a></li>
+			<li class="active"><a href="{:url('Item/type_add')}">分类添加</a></li>
+		</ul>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Item/type_addPost')}" enctype="multipart/form-data">
+			<!-- <div class="form-group">
+				<label for="input-parent_id" class="col-sm-2 control-label"><span class="form-required">*</span>分区选择</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control selectpid" name="cate_id" id="input-parent_id">
+						   <option value="0">请选择分区</option>
+                           <option value="2">国内商品</option>
+                           <option value="3">跨境商品</option>
+					</select>
+				</div>
+			</div> -->
+			<div class="form-group">
+				<label for="input-parent_id" class="col-sm-2 control-label"><span class="form-required">*</span>上级</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control selectboy" name="pid" id="input-parent_id">
+						<option value="0">作为一级类别</option>
+                        <foreach name="type_list" item="vo">
+                           <option value="{$vo.id}">{$vo.count}{$vo.cname}</option>
+                           <foreach name="vo.children" item="value">
+				           <if condition="$value['pid'] eq $vo['id']">
+				           <option value="{$value.id}">{$value.count}{$value.cname}</option>
+				           </if>
+					           <foreach name="value.children" item="val">
+					           <if condition="$val['pid'] eq $value['id']">
+					           <option value="{$val.id}">{$val.count}{$val.cname}</option>
+					           </if>
+					           </foreach>
+				           </foreach>
+                        </foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>名称</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="cname">
+				</div>
+			</div>
+			<div class="form-group">
+			    <label class="col-sm-2 control-label">{:lang('STATUS')}</label>
+				<div class="col-md-6 col-sm-10">
+					<label class="radio-inline">
+						<input type="radio" name="status" value="1" checked="checked"> {:lang('ENABLED')}
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="status" value="0"> {:lang('DISABLED')}
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">商品主图</label>
+				<div class="col-md-6 col-sm-10">
+					<table class="table table-bordered" style="float: left;">
+	                    <?php
+                        if(!empty($list->mainPic)){
+                            $arr = json_decode($list->mainPic,1);
+                            if(is_array($arr)){
+                            foreach ($arr as $key => $value) {
+                        ?>
+                        <div>                               
+                            <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="mainPic">
+                            <input type="hidden" name="mainPic[]" value="<?php echo $value;?>">
+                            <a href="javascript:;" onclick="moveImg(this)">删除</a>
+                        </div>
+                        <?php
+                            }
+                            }
+                        }
+                        ?>
+                        <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="showPic">
+                        <input type="file" id="files" name="files[]" ltype="text"  multiple="multiple" />    
+                        <input type="button" value=" 上传 " onclick="more_upload()" />  
+                        (最多上传1张)
+                    </table>
+	            </div>
+            </div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+		// 多图上传
+		function more_upload(){
+		    var i = 0;
+		    var s = '';
+		    $("img[id=mainPic]").each(function(n,e){
+		        i++;
+		    })
+		    var formData = new FormData();
+		    upfile = $("#files")[0].files;
+		    var ii = 1;
+		    $(upfile).each(function (n, e) {
+		        i++;
+		        if(i>1){
+		            alert("上传图片不能超过1张");
+		            clearInterval(s);
+		            return false;
+		        }
+		        var s = setTimeout(function () {
+		            formData.append('file', $(e)[0]);
+		            upload_img(2, formData);
+		        }, ii);
+		        ii += 1000;
+		    });
+		}
+        // 上传图片
+		function upload_img(id,formData){
+		    
+		    var file =  $("#lfile").val();
+		    // var files =  $("#files").val();
+
+		    if((file =='' || file == null) && id==1){
+		        alert("请选择上传文件");
+		        return false;
+		    }else{
+		        var upfile = '';
+		        if(id==1){
+		            var formData = new FormData();
+		            upfile = $("#lfile")[0].files[0];
+		            formData.append('file',upfile);
+		        }
+		        $.ajax({
+		            url: "{:url('Item/uploadPic')}",
+		            type: "POST",
+		            data: formData,
+		            dataType:'json',
+		            processData : false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+		            contentType : false, // 不设置Content-type请求头
+		            success: function(data) {
+		                if(data.success==1){
+		                    // $(".imgList").append($(".imgList>div:first-child").clone());
+		                    if(id==1){
+		                        $("#thumb").val(data.msg);
+		                        $("#showThumb").attr('src',data.msg);
+		                    }else{
+		                        var img = '<div><img src="'+data.msg+'" id="mainPic" style="width:60px;height:100px;">';
+		                        img += '<input type="hidden" name="mainPic[]" value="'+data.msgurl+'"><a href="javascript:;" onclick="moveImg(this)">删除</a></div>'
+		                        $("#showPic").before(img);
+		                        $("#files").val('');
+		                        // $("#mainPic").val(data.msg);
+		                        // $("#showPic").attr('src',data.msg);
+		                    }
+		                }else{
+		                    alert(data.msg);
+		                }
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                alert("上传失败，请检查网络后重试");
+		            }
+		        });
+		    }
+		}
+		function moveImg(str){
+		    $(str).parent().remove();
+		}
+		$(function(){
+	    	$('.selectpid').change(function(){
+	    		var pid=$('.selectpid').val();
+                //console.log(pid);
+                if(pid==0)
+                {
+                	var option = "<option>请选择分类</option>";
+                	$(".selectboy").html(option);
+                }else{
+		    		$.ajax({
+		    			url:"{:url('Item/typelian')}",
+		    			type:"post",
+		    			dataType: 'text',
+	                    data: {pid: pid},
+	                    success:function(data){
+	                    	var res = $.parseJSON(data);
+	                    	/*var selecthead="<select  name='sid' class='form-control' id='input-parent_id'><option value='0'>请选择</option>";
+	                    	var selectfoot="</select>";*/
+	                    	console.log(res);
+	                    	var option = "<option value='0'>作为一级分类</option>";
+	                    	$.each(res,function(k,v){
+	                    		console.log(v.id);
+	                    		option += "<option value='"+v.id+"'>"+v.count+v.cname+"</option>";
+	                    		$.each(v.children,function(ke,va){
+	                    			if(v.id==va.pid){
+	                    				option += "<option value='"+va.id+"'>"+va.count+va.cname+"</option>";
+	                    			}
+	                    			$.each(va.children,function(key,val){
+	                    			    if(va.id==val.pid){
+	                    				    option += "<option value='"+val.id+"'>"+val.count+val.cname+"</option>";
+	                    			    }	
+	                    			});
+	                    		});
+	                    	});
+	                    	//var html=selecthead+med+selectfoot;
+	                    	$(".selectboy").html(option);
+	                    	/*alert(html);*/
+	                    }
+		    		})
+	        	}
+	    	})
+	    })
+	</script>
+</body>
+</html>

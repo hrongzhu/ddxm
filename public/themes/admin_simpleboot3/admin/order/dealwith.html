@@ -1,0 +1,237 @@
+<include file="public@header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <div class="text-center">
+        <div><h3>订单剩余处理时间:</h3></div>
+        <?php if ($orderinfo['createtime'] <= time()): ?>
+            <div style="font-size: 25px;margin-top: 5px;color: #0b6cbc;">当前订单超过最后处理时间</div>
+        <?php else: ?>
+            <div id="timer" style="font-size: 25px;margin-top: 5px;color: #0b6cbc;"></div>
+        <?php endif ?>
+        
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <tr>
+                <td colspan="3">请选择收/发货方式</td>
+            </tr>
+            <tr height="60px">
+                    <td width="10%">
+                        <button type="button" class="btn send-way" data-id="0">门店自提</button>
+                    </td>
+                    <td>
+                        <div style="color: grey;">
+                            <div style="float: left;" style="width:50%">
+                                <input class="form-control js-datetime" type="text" id="date" placeholder="2018-01-01 08:00" name="datetime">
+                            </div>
+                            <div style="float: left;line-height: inherit;margin-left: 20px;margin-top: 8px;">请确定已与用户协商自提!</div>
+                        </div>
+                    </td>
+                    <td width="100px">
+                        <button id="tijiao1" disabled type="submit" class="btn btn-success">提交</button>
+                    </td>
+            </tr>
+            <tr height="60px">
+                    <br>
+                    <td>
+                        <label>
+                            <button type="button" class="btn send-way" data-id="1">门店快递</button>
+                        </label>
+                    </td>
+                    <td>
+                        <div style="color: grey;">
+                            <div style="float: left;" style="width:50%">
+                                <select class="form-control" name="express_id" id="express_id" >
+                                    <option value="">------选择快递公司------</option>
+                                    <foreach $expressInfo as $v>
+                                        <option  value="{$v->id}">{$v->express_name}</option>
+                                    </foreach>
+                                </select>
+                            </div>
+                            <div class="form-group" style="float: left;line-height: inherit;margin-left: 20px;">
+                                <input type="text" class="form-control" id="express_sn" placeholder="请输入快递单号">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <button  id="tijiao2" disabled type="submit" class="btn btn-success">提交</button>
+                    </td>
+            </tr>
+
+            <tr height="60px">
+                    <br>
+                    <td>
+                        <label>
+                            <button type="button" class="btn send-way" data-id="2">平台发货</button>
+                        </label>
+                    </td>
+                    <td>
+                        <div class="form-group" style="float: left;line-height: 100%;margin-left: 20px;margin-top: 10px;">
+                            <div>该笔订单需支付货款及邮费共计 ￥{$orderinfo.amount} 元
+                                <button style="margin-left: 20px;" class="btn btn-info" disabled  id="wxscanpay">支付</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <button id="pay-over" disabled class="btn btn-success">提交</button>
+                    </td>
+            </tr>
+        </table>
+    </div>
+    <div id="target1" style="width:100%;height: auto; display:none;line-height: 2rem;" class="text-center">
+        <div class="text-center" style=" background-color: #de4343;border-color: #c43d3d;height: 40px;border-radius: 4px;">
+            <h3 style=" margin: 0;line-height: 40px;font-size: 15px;">您需要使用手机微信扫描二维码支付</h3>
+        </div>
+         <h5>微信扫码，支付 <span style="font-size: 30px;"><b>{$orderinfo.amount}</b></span> 元</h5>
+        <div  class="well form-inline margin-top-0">
+            <div style="text-align: center;margin:20px 0px;">
+                    <div id="code"></div>
+                    <img src="" id="qrcodeImg"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+//-------------------------------------------------------------------------
+    $(function(){
+        var sy_time = '{$orderinfo.createtime}';
+        daojishi(parseInt(sy_time));
+        var order_id = "{$order_id}";
+        var cid;
+        var arr = {};
+        $('#wxscanpay').click(function() {
+            //默认用预存款支付
+            $.post("{:url('pay/balancePay')}",{'order_id':order_id},function(res){
+                if(res.code == 301){ //如果预存款不够了,用微信支付
+                    $.post("{:url('pay/wxScanPay')}",{'order_id':order_id},function(data){
+                        if(data.code){
+                            var qrcode = $('#code').qrcode({
+                                render: "canvas", //也可以替换为table
+                                width: 220,
+                                height: 220,
+                                text: data.msg /*可以通过ajax请求动态设置*/
+                            }).hide();
+                            //将生成的二维码转换成图片格式
+                            var canvas = qrcode.find('canvas').get(0);
+                            $('#qrcodeImg').attr('src', canvas.toDataURL('image/jpg'));
+//                            $('#pay-over').removeAttr('disabled');
+                            $('#target1').attr('style','display:block');
+                        }else{
+                            $('#target1').attr('style','display:block');
+                        }
+                    },'json');
+                    //ajax 轮询判断是否支付完成,隐藏二维码
+                    var ispay = setInterval(function(){
+                        console.log(order_id);
+                        $.post("{:url('pay/ispay')}",{'order_id':order_id},function(res){
+                            if(res.code == 200){
+                                $('#wxscanpay').attr('disabled','disabled');
+                                $('#pay-over').removeAttr('disabled');
+                                $('#target1').attr('style','display:none');
+                                window.clearTimeout(ispay);
+                            }
+                        });
+                    },1500);
+                }else if(res.code == 200){
+                    layer.msg(res.msg, {icon: 1,time:2000});
+                    $('#pay-over').removeAttr('disabled');
+                }else{
+                    layer.msg(res.msg, {icon: 1,time:2000});
+                }
+            })
+        });
+        $('.send-way').click(function(){
+            $('.send-way').each(function(){
+                $(this).attr('class','send-way btn btn-default');
+            });
+            //获取当前处理方式
+            $(this).attr('class','send-way btn btn-info');
+            cid = $(this).attr('data-id');//发货方式
+            //对提交等按钮的禁用关于开启
+            if(cid == 0){
+//                $('#tijiao1').attr('style','display:block');
+                $('#tijiao1').removeAttr('disabled');
+                $('#tijiao2').attr('disabled','disabled');
+                $('#wxscanpay').attr('disabled','disabled');
+                $('#pay-over').attr('disabled','disabled');
+            }else if(cid == 1){
+                $('#tijiao2').removeAttr('disabled');
+                $('#tijiao1').attr('disabled','disabled');
+                $('#wxscanpay').attr('disabled','disabled');
+                $('#pay-over').attr('disabled','disabled');
+            }else if(cid == 2){
+                $('#wxscanpay').removeAttr('disabled');
+                $('#tijiao2').attr('disabled','disabled');
+                $('#tijiao1').attr('disabled','disabled');
+            }
+        });
+        $('#tijiao1').click(function(){
+            arr = {};
+            $date = $('#date').val();
+            arr['send_way'] = cid;
+            arr['order_id'] = order_id;
+            arr['date'] = $date;
+            tijiao(arr);return;
+        });
+        $('#tijiao2').click(function(){
+            arr = {};
+            $express_id = $('#express_id').val();
+            $express_sn = $('#express_sn').val();
+            arr['send_way'] = cid;
+            arr['order_id'] = order_id;
+            arr['express_id'] = $express_id;
+            arr['express_sn'] = $express_sn;
+            tijiao(arr);return;
+        });
+        $('#pay-over').click(function(){
+            arr = {};
+            arr['send_way'] = cid;
+            arr['order_id'] = order_id;
+            tijiao(arr);return;
+        });
+    });
+    function tijiao(datas){
+        $.post("{:url('order/dealwith')}",datas,function(data){
+            if(data.code == 200){
+                layer.msg(data.msg, {icon: 1,time:2000},function () {
+                        window.location.href='{:url('order/orderlist')}';
+                    });
+                
+            }else{
+                layer.msg(data.msg, {icon: 0,time:2000},function () {
+                        window.location.href='{:url('order/orderlist')}';
+                    });
+            }
+        },'json');
+    }
+//倒计时
+function daojishi(tim) {
+    var interval = setInterval(function(){
+        var leftTime = tim - Math.round(new Date().getTime()/1000); //计算剩余的毫秒数
+        var days = parseInt(leftTime / 60 / 60 / 24 , 10); //计算剩余的天数
+        var hours = parseInt(leftTime / 60 / 60 % 24 , 10); //计算剩余的小时
+        var minutes = parseInt(leftTime / 60 % 60, 10);//计算剩余的分钟
+        var seconds = parseInt(leftTime % 60, 10);//计算剩余的秒数
+        days = checkTime(days);
+        hours = checkTime(hours);
+        minutes = checkTime(minutes);
+        seconds = checkTime(seconds);
+        var datetimes = days+"天 " + hours+":" + minutes+":"+seconds;
+        $('#timer').html(datetimes);
+        if(leftTime < 1){
+            clearInterval(interval);
+        }
+    },1000);
+}
+function checkTime(i){ //将0-9的数字前面加上0，例1变为01
+    if(i<10)
+    {
+        i = "0" + i;
+    }
+    return i;
+}
+</script>
+</body>
+</html>

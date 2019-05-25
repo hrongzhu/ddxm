@@ -1,0 +1,43 @@
+.plug-timer-grid{ width: 80%; }
+.plug-timer-grid td, .plug-timer-grid th{border: 1px solid #97B4D1;text-align: center; cursor:pointer;}
+.Selected{background-color: rgb(102,162,243);opacity: 0.5;}
+
+.plug-timer-grid {
+    border-collapse: collapse;
+    z-index: 4;
+}
+.plug-timer-grid thead tr{
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+table { width: auto; }
+table tr {
+    width: 40px!important;
+    height: 40px!important;
+}
+table td{
+    height: 40px!important;
+    max-width: 40px;
+    border: 1px solid #dfe6ec;
+    font-size: 12px;
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+    transition: background .5s;
+    -webkit-transition: background .5s;
+}
+
+.plug-timer-grid tbody th{
+    width: 4%;
+}
+.plug-timer-grid tbody tr td{
+    width: 40px;
+}
+
+.clear {
+    margin:20px 0px 20px 0;
+}
+.submit {
+    margin:20px 0px 20px 30px;
+}

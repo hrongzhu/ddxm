@@ -1,0 +1,53 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('Item/item_cate')}">商品列表</a></li>
+			<li><a href="{:url('Item/itemCateAdd')}">专区添加</a></li>
+		</ul>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>专区名称</th>
+					<th>专区图片</th>
+					<th>专区商品详情顶部图</th>
+					<th>专区商品详情尾部图</th>
+					<th width="130">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<foreach name="info" item="vo">
+				<tr style="height: 45px;">
+					<td>{$vo.id}</td>
+					<td style="width:150px;">{$vo.title}</td>
+					<td style="width:150px;"><img src="{$vo.thumb}" width="200"></td>
+					<td style="width:150px;"><img src="{$vo.left_pic|default=''}" style="height: 80px;"></td>
+					<td style="width:150px;"><img src="{$vo.right_pic|default=''}" style="height: 80px;"></td>
+					<td>
+					<a href="javascript:parent.openIframeLayer('{:url('Item/itemCateEdit',['id'=>$vo['id']])}','编辑',{});">编辑</a>
+					<!-- <a href="{:url('Item/itemCateDel',array('id'=>$vo.id))}">删除</a> -->
+					</td>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript" >
+
+	function del(obj)
+	{
+		var pid = obj.val();
+		$.post(url,{pid:pid},function(res){
+	    	if (res.code === 200) {
+
+	        }else {
+
+	        }
+		},'json');
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+define({
+  "name": "API接口-捣蛋熊猫",
+  "version": "1.0.0",
+  "description": "",
+  "title": "捣蛋熊猫接口文档",
+  "url": "http://dd.ddxm661.com",
+  "template": {
+    "withCompare": false,
+    "forceLanguage": "zh_cn",
+    "withGenerator": false
+  },
+  "sampleUrl": false,
+  "defaultVersion": "0.0.0",
+  "apidoc": "0.3.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2018-09-13T06:55:24.543Z",
+    "url": "http://apidocjs.com",
+    "version": "0.17.6"
+  }
+});

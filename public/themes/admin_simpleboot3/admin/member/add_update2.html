@@ -1,0 +1,221 @@
+<include file="public@header" />
+</head>
+<body>
+<div class="wrap js-check-wrap">
+	<form action="{:url('Member/saveUser')}" method="post" id="form-edit">
+		<input type="hidden" name="id" value="{$id|default=0}">
+		<div class="form-group">
+			<label for="mobile">手机号</label>
+			<if condition="empty($userInfo)">
+				<input type="text" name="mobile" class="form-control" value="{$userInfo.mobile|default=''}" id="mobile" placeholder="">
+				<else/>
+				<if condition="$isAdmin==1">
+					<input type="text" name="mobile" class="form-control" value="{$userInfo.mobile|default=''}" id="mobile" placeholder="">
+					<else/>
+					<input type="text" name="mobile" disabled="disabled" class="form-control" value="{$userInfo.mobile|default=''}" id="mobile" placeholder="">
+				</if>
+			</if>
+		</div>
+
+		<div class="form-group">
+			<label for="mobile">会员绑定门店</label>
+
+			<!--***************************userinfo为空时执行添加操作**************-->
+			<if condition="empty($userInfo)">
+				<if condition="$isAdmin==1">
+					<select class="form-control" name="shop_code">
+						<foreach $shopInfo as $v>
+							<option value="{$v.code}">{$v.code.$v.name}</option>
+						</foreach>
+					</select>
+					<else/>
+					<select name="shop_code" class="form-control" disabled="disabled">
+						<foreach $shopInfo as $v>
+							<option value="{$v.code}" {$shopId == $v.id?"selected=selected":""}>{$v.code.$v.name}</option>
+						</foreach>
+					</select>
+					<input type="hidden" name="shop_code" value="{$v.code}">
+				</if>
+				<else/>
+				<!--***************************userinfo为空时执行修改操作**************-->
+				<select class="form-control" name="shop_code" {$isAdmin == 1?"":"disabled=disabled"}>
+				<option value="0" <if condition="$userInfo.shop_code.code == '0'">selected</if>>未绑定</option>
+				<foreach $shopInfo as $v>
+					<option value="{$v.code}" {$userInfo.shop_code.code == $v.code?"selected=selected":""} >{$v.code.$v.name}</option>
+				</foreach>
+				</select>
+			</if>
+
+			<!--<if condition="$isAdmin==1">-->
+			<!--<if condition="isset($userInfo) && $userInfo.shop_code">-->
+			<!--<select class="form-control" name="shop_code">-->
+			<!--<option value="0" <if condition="$userInfo.shop_code.code == '0'">selected</if>>未绑定</option>-->
+			<!--<foreach $shopInfo as $v>-->
+			<!--<option value="{$v.code}" {$userInfo.shop_code.code == $v.code?"selected=selected":""} >{$v.code.$v.name}</option>-->
+			<!--</foreach>-->
+			<!--</select>-->
+			<!--<else/>-->
+			<!--<select class="form-control" name="shop_code">-->
+			<!--<option value=" " >绑定出错</option>-->
+			<!--<foreach $shopInfo as $v>-->
+			<!--<option value="{$v.code}">{$v.name}</option>-->
+			<!--</foreach>-->
+			<!--</select>-->
+			<!--</if>-->
+			<!--<else/>-->
+			<!--<if condition="isset($userInfo) && $userInfo.shop_code">-->
+			<!--<select class="form-control" name="shop_code" disabled="disabled">-->
+			<!--<option value="0" <if condition="$userInfo.shop_code.code == '0'">selected</if>>未绑定</option>-->
+			<!--<foreach $shopInfo as $v>-->
+			<!--<option value="{$v.code}" {$userInfo.shop_code.code == $v.code?"selected=selected":""} >{$v.code.$v.name}</option>-->
+			<!--</foreach>-->
+			<!--</select>-->
+			<!--<else/>-->
+			<!--<select class="form-control" name="shop_code" disabled="disabled">-->
+			<!--<option value=" " >绑定出错</option>-->
+			<!--<foreach $shopInfo as $v>-->
+			<!--<option value="{$v.code}">{$v.name}</option>-->
+			<!--</foreach>-->
+			<!--</select>-->
+			<!--</if>-->
+			<!--</if>-->
+
+		</div>
+
+		<div class="form-group">
+			<label for="nickname">昵称</label>
+			<input type="text" name="nickname" class="form-control" value="{$userInfo.nickname|default=''}" id="nickname" placeholder="">
+		</div>
+
+		<div class="form-group">
+			<label for="level_id">会员等级</label>
+			<if condition="empty($userInfo)">
+				<select class="form-control" name="level_id" {$isAdmin==1?"":"disabled=disabled"}>
+					<foreach $levelInfo as $v>
+						<option value="{$v.id}">
+							{$v.level_name}
+						</option>
+					</foreach>
+				</select>
+				<else/>
+				<select class="form-control" name="level_id" {$isAdmin==1?"":"disabled=disabled"} >
+					<foreach $levelInfo as $v>
+						<option value="{$v.id}" {$userInfo.level_id == $v.id?"selected=selected":""}>
+						{$v.level_name}
+						</option>
+					</foreach>
+				</select>
+			</if>
+			<input type="hidden" name="level_id" value="">
+		</div>
+
+
+		<if condition="$id">
+			<div class="form-group">
+				<label for="amount">累计充值</label>
+				<if condition="$isAdmin==1">
+					<input type="text" name="amount" class="form-control"  value="{$userInfo.amount|default=''}" placeholder="">
+					<else/>
+					<input type="text" disabled="disabled" name="amount" class="form-control"  value="{$userInfo.amount|default=''}" placeholder="">
+				</if>
+			</div>
+			<div class="form-group">
+				<label for="pid">微信ID</label>
+				<input type="text" class="form-control" disabled value="{$userInfo.openid|default='暂未绑定'}" placeholder="">
+			</div>
+			<div class="form-group">
+				<label for="pid">注册时间</label>
+				<input type="text" class="form-control" disabled value="{$userInfo.regtime|default=''}" placeholder="">
+			</div>
+		</if>
+
+		<if condition="$id">
+			<div class="form-group">
+				<label for="money">储值余额</label>
+				<if condition="$isAdmin==1">
+					<input type="text" name="money" class="form-control"  value="{$userInfo.money|default=''}" placeholder="">
+					<else/>
+					<input type="text" disabled="disabled" name="money" class="form-control"  value="{$userInfo.money|default=''}" placeholder="">
+				</if>
+			</div>
+			<div class="form-group">
+				<label for="pid">注册时间</label>
+				<input type="text" class="form-control" disabled value="{$userInfo.regtime|default=''}" placeholder="">
+			</div>
+		</if>
+
+		<if condition="$isAdmin==1">
+			状态设置:
+			<div class="radio">
+				<label>
+					<input type="radio" name="status" value="1" <if condition="$id"><if condition="$userInfo.status == 1">checked</if><else/>checked</if>>启用
+				</label>
+				<label>
+					<input type="radio" name="status" value="0" <if condition="$id"><if condition="$userInfo.status == 0">checked</if></if>>禁用
+				</label>
+			</div>
+			是否为员工:
+			<div class="radio">
+				<label>
+					<input type="radio" name="is_staff" value="1" <if condition="$id"><if condition="$userInfo.is_staff == 1">checked</if><else/>checked</if>>是
+				</label>
+				<label>
+					<input type="radio" name="is_staff" value="0" <if condition="$id"><if condition="$userInfo.is_staff == 0">checked</if></if>>否
+				</label>
+			</div>
+		</if>
+		<button type="submit" class="btn btn-default">提交</button>
+	</form>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script src="/plugins/h-ui/js/H-ui.min.js"></script>
+<script type="text/javascript">
+
+    $(function () {
+        $('input[name="level_id"]').val($('select[name="level_id"] option:selected').val())
+
+        /*管理员-编辑*/
+        function admin_edit(title, url, w, h) {
+            layer_show(title, url, w, h);
+        }
+
+        $('select[name="shop_code"]').on('change',function(){
+            $('input[name="shop_code"]').val($(this).find('option:selected').val())
+        })
+
+        $('select[name="level_id"]').on('change',function(){
+            $('input[name="level_id"]').val($(this).find('option:selected').val())
+        })
+
+        $('#form-edit').bind('submit', function () {
+            $("#form-edit").ajaxSubmit(function (result) {
+                if (result.code == 1) {
+                    layer.msg(result.msg, {
+                        icon: 1,
+                        time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                    }, function () {
+                        window.parent.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name);
+                        parent.layer.close(index);
+                    });
+                } else if(result.code==2){
+                    $('input[name="mobile"]').val(result.data.mobile)
+                    $('input[name="nickname"]').val(result.data.nickname).attr('disabled',true)
+                    var htmls =
+                        $('select[name="shop_code"]').html('<option value="'+result.data.shop_code.code+'" selected="selected">'+result.data.shop_code.code+result.data.shop_code.name+'</option>')
+                    layer.msg(result.msg,{icon:2,closeBtn:1,time:false,end:function(){
+                            window.location.reload()
+                        }})
+                }
+                else {
+                    layer.msg(result.msg, {
+                        icon: 0,
+                    });
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,778 @@
+<?php if (!defined('THINK_PATH')) exit(); /*a:2:{s:54:"themes/admin_simpleboot3/admin\member_goods\index.html";i:1554867203;s:43:"themes/admin_simpleboot3/public\header.html";i:1554867210;}*/ ?>
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- Set render engine for 360 browser -->
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- HTML5 shim for IE8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <![endif]-->
+
+
+    <link href="__TMPL__/public/assets/themes/<?php echo cmf_get_admin_style(); ?>/bootstrap.min.css" rel="stylesheet">
+    <link href="__TMPL__/public/assets/themes/<?php echo cmf_get_admin_style(); ?>/bootstrap-select.min.css" rel="stylesheet">
+    <link href="__TMPL__/public/assets/simpleboot3/css/simplebootadmin.css" rel="stylesheet">
+    <link href="__STATIC__/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <style>
+        form .input-order {
+            margin-bottom: 0px;
+            padding: 0 2px;
+            width: 42px;
+            font-size: 12px;
+        }
+
+        form .input-order:focus {
+            outline: none;
+        }
+
+        .table-actions {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding: 0px;
+        }
+
+        .table-list {
+            margin-bottom: 0px;
+        }
+
+        .form-required {
+            color: red;
+        }
+    </style>
+    <link href="/plugins/layer/2.4/skin/layer.css" rel="stylesheet">
+    <script type="text/javascript">
+        //全局变量
+        var GV = {
+            ROOT: "__ROOT__/",
+            WEB_ROOT: "__WEB_ROOT__/",
+            JS_ROOT: "static/js/",
+            APP: '<?php echo \think\Request::instance()->module(); ?>'/*当前应用名*/
+        };
+    </script>
+    <script src="__TMPL__/public/assets/js/jquery-1.10.2.min.js"></script>
+    <script src="__STATIC__/js/wind.js"></script>
+    <script src="__TMPL__/public/assets/js/bootstrap.min.js"></script>
+    <script src="__TMPL__/public/assets/js/jquery.qrcode.min.js"></script>
+    <script src="/plugins/layer/2.4/layer.js"></script>
+    <script src="__TMPL__/public/assets/js/bootstrap-select.min.js"></script>
+    <script src="__TMPL__/public/assets/js/defaults-zh_CN.min.js"></script>
+    <script src="/plugins/h-ui.admin/js/H-ui.admin.page.js"></script>
+    <!-- <script src="/ddxm_admin/public/plugins/h-ui/js/H-ui.min.js"></script> -->
+    <script>
+        Wind.css('artDialog');
+        Wind.css('layer');
+        $(function () {
+            $("[data-toggle='tooltip']").tooltip();
+            $("li.dropdown").hover(function () {
+                $(this).addClass("open");
+            }, function () {
+                $(this).removeClass("open");
+            });
+        });
+    </script>
+    <?php if(APP_DEBUG): ?>
+        <style>
+            #think_page_trace_open {
+                z-index: 9999;
+            }
+        </style>
+    <?php endif; ?>
+
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs" role="tablist">
+			<li role="presentation" class="active"><a href="#index" aria-controls="index" role="tab" data-toggle="tab">活动列表</a></li>
+			<li role="presentation"><a href="#add" aria-controls="add" role="tab" data-toggle="tab" id="activity-add">活动添加</a></li>
+		</ul>
+		<div class="tab-content">
+<!--******************************************page1**************************************-->
+			<div role="tabpanel" class="tab-pane active" id="index">
+				<form class="well form-inline margin-top-0" method="get" action="<?php echo url('MemberGoods/index'); ?>">
+					名称:
+					<input type="text" class="form-control" id="titleM" name="title" style="width: 120px;" value="" placeholder="请输入活动名称">
+					参与会员:
+					<select class="selectpicker" id="level-includeM" multiple data-selected-text-format="count > 3">
+						<?php if(is_array($level_lists) || $level_lists instanceof \think\Collection || $level_lists instanceof \think\Paginator): if( count($level_lists)==0 ) : echo "" ;else: foreach($level_lists as $key=>$vo): ?>
+							<option value="<?php echo $vo['id']; ?>" class="level"><?php echo $vo['level_name']; ?></option>
+						<?php endforeach; endif; else: echo "" ;endif; ?>
+					</select>
+					活动状态:
+					<select class="form-control" id="statusM" name="status">
+						<option value="-1">请选择</option>
+						<option value="0">已结束</option>
+						<option value="1">进行中</option>
+						<option value="2">未开始</option>
+					</select>
+					<input type="button" class="btn btn-primary" id="search_member_goods" value="搜索" />
+				</form>
+				<table class="table table-hover table-bordered">
+					<thead>
+					<tr>
+						<th width="50">ID</th>
+						<th>编号</th>
+						<th>活动名称</th>
+						<th>参与会员</th>
+						<th>商品数量</th>
+						<th>开始时间</th>
+						<th>结束时间</th>
+						<th>活动状态</th>
+						<th>状态</th>
+						<th width="130">操作</th>
+					</tr>
+					</thead>
+					<tbody id="data-content-M">
+
+					</tbody>
+				</table>
+                <div id="pageBarM" style="text-align: right">
+
+                </div>
+			</div>
+<!--***************************************************************page2***************************************-->
+			<div role="tabpanel" class="tab-pane" id="add">
+				<div class="form-group">
+					<label for="title" >名称</label>
+					<input type="text" class="form-control" id="title" placeholder="输入名称">
+				</div>
+				<div class="form-group">
+					<label for="start-time" >开始时间</label>
+					<input type="text" class="form-control" id="start-time" placeholder="选择开始时间">
+				</div>
+				<div class="form-group">
+					<label for="end-time" >结束时间</label>
+					<input type="text" class="form-control" id="end-time" placeholder="选择结束时间">
+				</div>
+				<div class="form-group">
+					<label for="status" >状态</label>
+					<div id="status">
+						<label class="radio-inline">
+							<input type="radio" name="status" checked value="1"> 启用
+						</label>
+						<label class="radio-inline">
+							<input type="radio" name="status" value="0"> 禁用
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="level-include" >参与会员</label>
+					<div id="level-include">
+						<?php if(is_array($level_lists) || $level_lists instanceof \think\Collection || $level_lists instanceof \think\Paginator): if( count($level_lists)==0 ) : echo "" ;else: foreach($level_lists as $key=>$vo): ?>
+							<label class="checkbox-inline">
+								<input type="checkbox" name="user" value="<?php echo $vo['id']; ?>"> <?php echo $vo['level_name']; ?>
+							</label>
+						<?php endforeach; endif; else: echo "" ;endif; ?>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="pay-mode" >支持结账方式</label>
+					<div id="pay-mode">
+						<label class="checkbox-inline">
+							<input disabled="disabled" type="checkbox" checked="checked" name="pay-mode" value="3"> 会员余额
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="goods" >设置商品</label><span id="count"></span>
+					<div id="goods">
+						<table class="table table-bordered table-condensed table-hover">
+							<thead>
+								<tr>
+									<th>商品名称</th>
+									<th>商品分类</th>
+									<th>商品原价</th>
+									<?php if(is_array($level_lists) || $level_lists instanceof \think\Collection || $level_lists instanceof \think\Paginator): if( count($level_lists)==0 ) : echo "" ;else: foreach($level_lists as $level_id=>$vo): ?>
+										<th data-level-id="<?php echo $vo['id']; ?>"><?php echo $vo['level_name']; ?></th>
+									<?php endforeach; endif; else: echo "" ;endif; ?>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody id="goods-now">
+								<tr>
+									<td id="add-member-goods" colspan="<?php echo (count($level_lists)+4)?>" style="text-align: center;cursor:pointer;color: red" >
+										添加商品
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<button class="btn btn-primary" id="save-all">保存</button>
+			</div>
+		</div>
+
+	</div>
+
+	<!--商品列表模态框-->
+	<div class="modal fade bs-example-modal-lg" id="goodsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document" style="width: 80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">添加商品到会员商品</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-inline">
+						商品名称:
+						<input type="text" class="form-control" id="goods_name" name="search" style="width: 120px;" value="" placeholder="请输入商品名称">
+						一级分类:
+						<select class="form-control" id="f_cate" onchange="get_s_cate($(this))" name="f_cate">
+							<option value="-1">请选择</option>
+							<?php foreach($f_list as $v): ?>
+								<option value="<?php echo $v['id']; ?>"><?php echo $v['cname']; ?></option>
+							<?php endforeach; ?>
+						</select>
+						二级分类:
+						<select class="form-control selectboy" name="s_cate" id="s_cate">
+							<option value="">请选择</option>
+						</select>
+					</div>
+					<div>
+						<table class="table table-striped table-condensed table-hover">
+							<thead>
+							<tr>
+								<th></th>
+								<th>商品名称</th>
+								<th>商品分类</th>
+								<th>商品原价</th>
+								<th>商品进价</th>
+							</tr>
+							</thead>
+							<tbody id="data-content">
+
+							</tbody>
+						</table>
+
+					</div>
+					<div id="pageBar" style="text-align: right">
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" onclick="turnPage(1)" data-dismiss="modal">关闭</button>
+					<button type="button" id="add-save" class="btn btn-primary">保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--活动包含的商品模态框-->
+	<div class="modal fade bs-example-modal-lg" id="includeGoodsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document" style="width: 80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="includeGoodsModalLabel"></h4>
+				</div>
+				<div class="modal-body">
+					<div>
+						<table class="table table-striped table-condensed table-hover">
+							<thead>
+							<tr><th></th><th>商品名称</th><th>商品分类</th><th>商品原价</th><th>商品进价</th><th>操作</th></tr>
+							</thead>
+							<tbody id="include-goods-content">
+
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+	<script src="__STATIC__/js/admin.js"></script>
+	<script src="__STATIC__/js/laydate/laydate.js"></script>
+	<script src="__STATIC__/js/jquery.validate/jquery.validate.js"></script>
+
+	<script type="text/javascript" >
+		var ID;
+		var goods_name ='';
+		var f_cate = '';
+		var s_cate = '';
+		var curPage;
+		var totalItem;
+		var pageSize;
+		var totalPage;
+
+        var title ='';
+        var include_level = [];
+        var status = '';
+        var curPageM;
+        var totalItemM;
+        var pageSizeM;
+        var totalPageM;
+
+		var choosedGoods = new Array();
+		$(function(){
+		    curPageM = 1;
+		    turnMemberGoodsPage(curPageM);
+        })
+		//删除数组某个元素
+        Array.prototype.indexOf = function(val) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == val) return i;
+            }
+            return -1;
+        };
+        Array.prototype.remove = function(val) {
+            var index = this.indexOf(val);
+            if (index > -1) {
+                this.splice(index, 1);
+            }
+        };
+        //点击添加活动时拉取商品数据
+		$('#activity-add').click(function(){
+		    turnPage(1);
+		})
+
+        //搜索条件改变时重新查询结果
+		$('#goods_name').change(function(){
+			goods_name = $(this).val();
+			turnPage(curPage)
+		})
+
+		$('#s_cate').change(function(){
+		    f_cate = $('#f_cate option:selected').val();
+		    s_cate = $('#s_cate option:selected').val();
+		    turnPage(curPage)
+		})
+
+        //获取分页数据
+        function turnPage(page) {
+		    var index;
+            $.ajax({
+                type: 'get',
+                url: "<?php echo url('MemberGoods/getPage'); ?>",     //这里是请求的后台地址，自己定义
+                data: {
+                    'curPage': page,
+					'goods_name':goods_name,
+                    'f_cate':f_cate,
+                    's_cate':s_cate
+				},
+                dataType: 'json',
+                beforeSend: function () {
+                  index = layer.load(2);
+                },
+                success: function (data) {
+                    layer.close(index)
+                    $("#data-content").empty();       //移除原来的分页数据
+                    totalItem = data.data.totalItem; // 返回的总记录数
+                    pageSize = data.data.pageSize; //返回的每一页记录数
+                    curPage = page; //返回的当前页码
+                    totalPage = data.data.totalPage; //返回的总页数
+					if(totalItem==0){
+					    console.log(totalItem)
+					    layer.msg('没有相关数据！',{'icon':2},function () {
+							return
+                        })
+					}
+                    var data_content = data.data.data_content; //返回的数据内容
+                    var data_html = ""; //数据输出的html代码
+                    //添加新的分页数据（数据的显示样式根据自己页面来设置，这里只是一个简单的列表）
+					var control_status;
+                    $.each(data_content, function (index, array) {
+                        if(array['is_price_control']==1){
+                            control_status = '是'
+                        }
+                        if(array['is_price_control']==0){
+                            control_status = '否'
+                        }
+                        data_html += "<tr><td data-item-id='"+array['id']+"'><input type='checkbox' class='choosed-goods'></td><td>" + array['title']+ "</td><td>" + array['cname'] + "</td><td>" + array['price'] + "</td><td>" + control_status + "</td></tr>";
+                    }); //遍历数据，形成html代码
+
+                    $("#data-content").html(data_html); //输出html代码
+                    getPageBar();
+                },
+                error: function () {
+                    alert("数据加载失败");
+                }
+            });
+        }
+
+        //生成分页会员商品数据
+        function turnMemberGoodsPage(pageM){
+			var index;
+            $.ajax({
+                type: 'get',
+                url: "<?php echo url('MemberGoods/getMemberGoodsPage'); ?>",     //这里是请求的后台地址，自己定义
+                data: {
+                    'curPage': pageM,
+                    'title':title,
+                    'include_level':include_level,
+                    'status':status
+                },
+                dataType: 'json',
+                beforeSend: function () {
+                    index = layer.load(2);
+                },
+                success: function (data) {
+                    layer.close(index)
+					// console.log(data);return
+                    $("#data-content-M").empty();       //移除原来的分页数据
+                    totalItemM = data.data.totalItem; // 返回的总记录数
+                    pageSizeM = data.data.pageSize; //返回的每一页记录数
+                    curPageM = pageM; //返回的当前页码
+                    totalPageM = data.data.totalPage; //返回的总页数
+					if(totalItemM==0){
+					    layer.msg('没有数据',{'icon':2},function(){
+					        return;
+						});
+					}
+                    var data_content = data.data.data_content; //返回的数据内容
+                    // console.log(data_content);
+                    var data_html = ""; //数据输出的html代码
+                    //添加新的分页数据（数据的显示样式根据自己页面来设置，这里只是一个简单的列表）
+                    $.each(data_content, function (index, array) {
+                    	var url = '/admin/Member_goods/viewDetail/id/'+array['id'];
+                        data_html += `<tr><td>${array.id}</td><td>${array.no}</td><td>${array.title}
+                            </td><td>${array.level_include}</td><td>${array.count}</td><td>${array.begin_time}
+                            </td><td>${array.end_time}</td><td>${array.activity_status}</td><td>${array.status}
+                            </td><td><a href="javascript:void(0)" class="del-member-goods">删除|</a>
+							<a href="javascript:void(0)" onclick="show('`+url+`')">查看</a></td></tr>`;
+                    }); //遍历数据，形成html代码
+                    // alert(1);return;
+                    $("#data-content-M").html(data_html); //输出html代码
+                    getPageBarM();
+                },
+                error: function () {
+                    alert("数据加载失败");
+                }
+            });
+        }
+
+
+		$('body').on('click','.view-price',function(){
+		    var id = $(this).parent().attr('data-member-goods-id');
+		    $.post("<?php echo url('MemberGoods/getDetail'); ?>",{
+		        'member_goods_id':ID,
+				'goods_id':id
+			},function(res){
+				layer.open({
+					title:'价格详情'
+				})
+			})
+		})
+
+        $('#search_member_goods').click(function(){
+            include_level.splice(0,include_level.length)
+            title = $('#titleM').val();
+            $('#level-includeM option:selected').each(function(k,v){
+                include_level.push($(this).val())
+            })
+            status = $('#statusM option:selected').val();
+            turnMemberGoodsPage(curPageM)
+        })
+
+        //生成分页导航
+        function getPageBar() {
+		    // console.log(curPage)
+            //防止数据错误时候出现当前页数大于总页数
+            if (curPage > totalPage) {
+                curPage = totalPage;
+            }
+            //防止数据错误时候出现当前页数小于第一页
+            if (curPage < 1) {
+                curPage = 1;
+            }
+            //定义分页按钮html代码
+            pageBar = "";
+            //如果不是第一页
+            if (curPage != 1) {
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage(1)'>首页</a></span>";
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage("+(curPage-1)+")'>上一页</a></span>";
+            }
+
+            //显示的页码按钮(5个)
+
+            //定义start 和end两个变量准备循环输出可见的分页按钮
+            var start, end;
+            if (totalPage <= 5) {
+                start = 1;
+                end = totalPage;
+            } else {
+                //当前页码与总页数相差1个的时候，要显示之前的页码
+                if (totalPage - curPage < 2) {
+                    start = totalPage - 4;
+                    end = totalPage;
+                } else {
+                    //显示前面两个和后面两个
+                    start = curPage - 2;
+                    if(start<1){
+                        start = 1;
+					}
+                    end = curPage + 2;
+                }
+            }
+            //循环输出分页按钮
+            for (var i = start; i <= end; i++) {
+
+                if (i == curPage) {
+                    pageBar += "<span class='pageBtn-selected'><a href='javascript:turnPage(" + i + ")'>" + i + "</a></span>";
+                } else {
+                    pageBar += "<span class='pageBtn'><a href='javascript:turnPage(" + i + ")'>" + i + "</a></span>";
+                }
+            }
+
+            //如果不是最后页,显示输出“下一页 ， 末页”
+
+            if (curPage != totalPage) {
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage(" + (parseInt(curPage) + 1) + ")'>下一页</a></span>";
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage(" + totalPage + ")'>末页</a></span>";
+            }
+            //匹配改变pageBar里面的内容
+            $("#pageBar").html(pageBar);
+        }
+
+        //生成会员商品分页导航
+        function getPageBarM() {
+            // console.log(curPage)
+            //防止数据错误时候出现当前页数大于总页数
+            if (curPageM > totalPageM) {
+                curPageM = totalPageM;
+            }
+            //防止数据错误时候出现当前页数小于第一页
+            if (curPageM < 1) {
+                curPageM = 1;
+            }
+            //定义分页按钮html代码
+            pageBar = "";
+            //如果不是第一页
+            // console.log(curPageM)
+            if (curPageM != 1) {
+                pageBar += "<span class='pageBtn'><a href='javascript:turnMemberGoodsPage(1)'>首页</a></span>";
+                pageBar += "<span class='pageBtn'><a href='javascript:turnMemberGoodsPage("+(curPageM-1)+")'>上一页</a></span>";
+            }
+
+            //显示的页码按钮(5个)
+
+            //定义start 和end两个变量准备循环输出可见的分页按钮
+            var start, end;
+            if (totalPageM <= 5) {
+                start = 1;
+                end = totalPageM;
+            } else {
+                //当前页码与总页数相差1个的时候，要显示之前的页码
+                if (totalPageM - curPageM < 2) {
+                    start = totalPageM - 4;
+                    end = totalPageM;
+                } else {
+                    //显示前面两个和后面两个
+                    start = curPageM - 2;
+                    if(start<1){
+                        start = 1;
+                    }
+                    end = curPageM + 2;
+                }
+            }
+            //循环输出分页按钮
+            for (var i = start; i <= end; i++) {
+
+                if (i == curPageM) {
+                    pageBar += "<span class='pageBtn-selected'><a href='javascript:turnMemberGoodsPage(" + i + ")'>" + i + "</a></span>";
+                } else {
+                    pageBar += "<span class='pageBtn'><a href='javascript:turnMemberGoodsPage(" + i + ")'>" + i + "</a></span>";
+                }
+            }
+
+            //如果不是最后页,显示输出“下一页 ， 末页”
+
+            if (curPageM != totalPageM) {
+                pageBar += "<span class='pageBtn'><a href='javascript:turnMemberGoodsPage(" + (parseInt(curPageM) + 1) + ")'>下一页</a></span>";
+                pageBar += "<span class='pageBtn'><a href='javascript:turnMemberGoodsPage(" + totalPageM + ")'>末页</a></span>";
+            }
+            //匹配改变pageBar里面的内容
+            $("#pageBarM").html(pageBar);
+        }
+
+        //删除会员商品
+        $('body').on('click','.del-member-goods',function(){
+            var id = $(this).parent().parent().find('td').first().text();
+            $.post("<?php echo url('MemberGoods/delMemberGoods'); ?>",{
+                'id':id
+            },function (res) {
+                if(res.code==1){
+                    layer.msg(res.msg,{'icon':1},function(){
+                        window.location.reload()
+                    })
+                }else {
+                    layer.msg(res.msg,{'icon':2})
+                }
+            })
+        })
+
+        //添加商品为会员商品
+        $('#data-content').on('click','.choosed-goods',function(){
+            var item_id = $(this).parent().attr('data-item-id');
+            var goods = $(this).parent().next().text();
+            var cate = $(this).parent().next().next().text();
+            var price = $(this).parent().next().next().next().text();
+            if ($(this).prop('checked')) {
+                choosedGoods.push(item_id)
+				var htmls = '';
+                htmls+='<tr class="added" data-item-id="'+item_id+'" style="display: none"><td>'+goods+'</td><td>'+cate+'</td><td>'+price+'</td>';
+                var num =  $('#goods th').length-5;
+                for(var i=0;i<=num;i++){
+                    htmls+='<td><input class="price" type="text" value="'+price+'" placeholder="输入价格"></td>';
+				}
+				htmls+='<td><a href="javascript:void(0)" class=del-goods>删除</a></td></tr>';
+				$('#goods-now').append(htmls)
+            }else {
+                choosedGoods.remove(item_id)
+				$('tr[data-item-id="'+item_id+'"]').remove();
+			}
+		})
+
+		//点击保存会员商品时显示表格，隐藏模态框
+		$('#add-save').click(function(){
+		    $('#goods-now tr.added').show()
+			$('#goodsModal').modal('hide')
+			turnPage(1)
+		})
+
+		//删除一个活动商品，从数组中移除，删除表格
+		$('#goods-now').on('click','.del-goods',function(){
+            var id = $(this).parent().parent().attr('data-item-id')
+            choosedGoods.remove(id)
+            $('#goods-now tr[data-item-id="'+id+'"]').remove();
+        })
+
+
+
+        laydate.render({
+            elem: '#start-time'
+            ,type: 'datetime'
+        });
+
+        laydate.render({
+            elem: '#end-time'
+            ,type: 'datetime'
+        });
+
+
+        $('body').on('click','#add-member-goods',function(){
+            $('#goods-now tr.added').hide()
+            $('#goodsModal').modal('show')
+		})
+
+		$('#save-all').click(function(){
+		    var include_level = {};
+		    var pay_mode = {};
+		    var goods_info = {};
+		    //输入验证，把选择的会员等级和支付方式放进数组
+            if ($('#title').val() == '') {
+                layer.msg('必须输入活动名称！',{'icon':2}
+                )
+                return;
+            }
+            if($('#start-time').val()==''){
+                layer.msg('必须选择开始时间！',{'icon':2}
+                )
+				return;
+            }
+            if($('#end-time').val()==''){
+                layer.msg('必须选择结束时间！',{'icon':2}
+                )
+				return;
+            }
+            if (Date.parse(new Date($('#end-time').val())) <= Date.parse(new Date($('#start-time').val()))) {
+                layer.msg('结束时间必须大于开始时间！',{'icon':2}
+                )
+				return;
+            }
+            if ($('input[name="user"]:checked').length == 0) {
+                layer.msg('必须至少选择一个会员等级！',{'icon':2}
+                )
+				return;
+            }
+            $('input[name="user"]:checked').each(function(k,v){
+                include_level[k] = $(this).val()
+			})
+            if ($('input[name="pay-mode"]:checked').length == 0) {
+                layer.msg('必须至少选择一种支付方式！',{'icon':2}
+                )
+				return;
+            }
+            $('input[name="pay-mode"]:checked').each(function(k,v){
+                pay_mode[k] = $(this).val()
+			})
+            //遍历表格，构造会员商品价格数据
+			$.each($('#goods-now tr.added'),function(k,v){
+			    var tmp = {};
+			    var item_id = $(v).attr('data-item-id');
+			    $.each($(v).find("td:not(:last)"),function(kk,vv){
+                    if(kk>2){
+                        // console.log($('#goods tr:nth-child(1)').find('th:eq('+kk+')').attr('data-level-id'))
+                        var level_id = $('#goods tr:nth-child(1)').find('th:eq('+kk+')').attr('data-level-id');
+                        tmp[level_id] = $(this).find('input').val();
+                        if($(this).find('input').val()==''){
+                            layer.msg('请将会员价格设置完整！',{'icon':2},function () {
+                                return;
+                            })
+                        }
+                        if(isNaN($.trim($(this).find('input').val()))){
+                            layer.msg('价格只能是数字！',{'icon':2},function () {
+                                return;
+                            })
+                        }
+                    }
+				})
+                goods_info[item_id] = tmp;
+			})
+            if (JSON.stringify(goods_info)=='{}') {
+                layer.msg('未添加任何会员商品！',{'icon':2}
+                )
+				return;
+            }
+		    $.post("<?php echo url('MemberGoods/save'); ?>",{
+				'title':$('#title').val(),
+				'beginTime':$('#start-time').val(),
+				'endTime':$('#end-time').val(),
+				'status':$('input[name="status"]:checked').val()?$('input[name="status"]:checked').val():1,//默认状态为1
+				'include_level':JSON.stringify(include_level),
+				'pay_mode':JSON.stringify(pay_mode),
+                'goods_info':JSON.stringify(goods_info)
+			},function(res){
+                if(res.code==1){
+                    layer.msg(res.msg,{'icon':1},function(){
+                        window.location.reload();
+                    })
+                }else {
+                    layer.msg(res.msg,{'icon':2})
+                }
+			})
+		})
+
+        function get_s_cate(obj)
+        {
+            var pid = obj.val();
+            var url = "<?php echo url('Item/itemTlians'); ?>";
+            $.post(url,{pid:pid},function(res){
+                $shtml = '';
+                if (res.code === 200) {
+                    $.each(res.data, function(k, v) {
+                        $shtml += `<option value="${v.id}">${v.cname}</option>`;
+                    });
+                    $('#s_cate').append($shtml);
+                }else {
+                    $shtml = `<option value="">请选择分类</option>`;
+                    $('#s_cate').append($shtml);
+                }
+            },'json');
+        }
+        function show(url)
+        {
+        	layer_show('详情',url);
+        }
+</script>
+</body>
+</html>

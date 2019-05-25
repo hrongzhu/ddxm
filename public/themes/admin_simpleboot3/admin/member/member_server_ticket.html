@@ -1,0 +1,129 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li ><a href="{:url('Member/userCardList',['id' => $member_id])}">体验券列表</a></li>
+			<li ><a href="{:url('Member/userVoucherList',['id' => $member_id])}">代金券列表</a></li>
+			<li class="active"><a href="{:url('Member/userServerList',['id' => $member_id])}">服务券列表</a></li>
+			<if condition="$is_show == 1">
+				<li style="float: right"><a href="javascript:void (0);" onclick="admin_edit('添加服务券','{:url('Member/addTicket',['member_id' => $member_id,'type'=>2])}')">添加服务券</a></li>
+			</if>
+		</ul>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">STID</th>
+					<th >服务券名称</th>
+					<th >服务项目</th>
+					<th >获取类型</th>
+					<th >消耗</th>
+					<th >会员名</th>
+					<th >会员电话</th>
+					<th >获取时间</th>
+					<th >服务人员</th>
+					<th >核销时间</th>
+					<th >状态</th>
+					<th >操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<if condition="empty($list)">
+				<tr>
+					<td colspan="12" style="text-align: center">暂无服务券</td>
+				</tr>
+				<else/>
+				<foreach name="list" item="v">
+					<tr>
+						<td>{$v.id}</td>
+						<td>{$v.name}</td>
+						<td>{$v.sname}</td>
+						<td>{$v.get_way == 1?'售卖':'兑换'}</td>
+						<td>{$v.integral_price}{$v.get_way == 1?'元':'积分'}</td>
+						<td>{$v.nickname}</td>
+						<td>{$v.mobile}</td>
+						<td>{$v.paytime?date('Y-m-d H:i',$v.paytime):'N/A'}</td>
+						<td>{$v.worker_name?$v.worker_name:'无'}</td>
+						<td>{$v.abolish_time?date('Y-m-d H:i',$v.abolish_time):'N/A'}</td>
+						<td><if condition="$v.status==1">正常</if><if condition="$v.status==2">已使用</if><if condition="$v.status==3">已过期</if></td>
+						<td>
+							<if condition="$v.status eq 1">
+								<a href="javascript:void (0);" onclick="delTicket('{$v.id}')" >删除（禁用）</a>
+							</if>
+						</td>
+					</tr>
+				</foreach>
+			</if>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="checkModalLabel">选择服务人员</h4>
+				</div>
+
+				<div class="modal-body recharge-items">
+					<select name="worker" id="worker" class="form-control">
+						<foreach name="worker_list" item="vo">
+							<option value="{$vo.workid}">{$vo.workid} -- {$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="check_ticket_save">确认核销</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*编辑*/
+    function admin_edit(title,url){
+        layer_show(title,url);
+    }
+
+	function delTicket(ticket_id){
+    	layer.confirm("确认删除？", { title: "确认" }, function (index) {
+			$.post("{:url('Member/delUserTicket')}", { 'user_ticket_id':ticket_id}, function (res) {
+				if(res.code === 200){
+					layer.msg(res.msg,{'icon':1,time:2000},function(){
+						window.location.reload();
+					});
+				}else {
+					layer.msg(res.msg,{'icon':2,time:2000});
+				}
+			});
+		});
+	}
+
+    $('.check-ticket').click(function(){
+        let ticket_id = $(this).attr('data-ticket-id');
+		$('#checkModal').modal('show');
+		$('#check_ticket_save').click(function(){
+			let workid = $('#worker option:selected').val();
+            layer.confirm("确认核销？", { title: "核销确认" }, function (index) {
+                layer.close(index);
+                $.post("{:url('Member/checkTicket')}", { 'id':ticket_id,'workid':workid}, function (res) {
+					if(res.code === 200){
+					    layer.msg(res.msg,{'icon':1,time:2000},function(){
+					    	$('#checkModal').modal('hide');
+					    	window.location.reload();
+					    });
+					}else {
+                        layer.msg(res.msg,{'icon':2});
+                    }
+                });
+            });
+        })
+	})
+</script>
+</body>
+</html>

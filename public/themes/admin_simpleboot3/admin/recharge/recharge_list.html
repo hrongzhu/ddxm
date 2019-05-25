@@ -1,0 +1,93 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<div>
+            <h3 class="modal-title"><b>充值面额列表</b></h3>
+        </div>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th>id</th>
+					<th>充值面额</th>
+					<th width="130">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="r_list" item="v">
+					<tr>
+						<td>{$v.id}</td>
+						<td>{$v.price}</td>
+						<td>
+							<a onclick="dels($(this),{$v.id})">删除</a>
+						</td>
+					</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div>
+			<div class="form-group">
+				<label for="price">设置充值面额</label>
+				<input type="text" class="form-control" name="price" id="price" value="" placeholder="金额">
+			</div>
+			<div class="form-group">
+				<button class="btn btn-success" onclick="add_recharge()">添加</button>
+			</div>
+		</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script>
+
+    function add_recharge()
+    {
+    	var price = $('#price').val();
+    	var status = $('input[name="status"]:checked').val();
+    	if (!isNum(price)) {
+    		layer.msg('必须是数字',{icon: 0, time: 2000});
+    		return false;
+    	}else if(price <= 0){
+    		layer.msg('不能小于0',{icon: 0, time: 2000});
+    		return false;
+    	}
+    	// var shop_id =
+    	$.post('{:url('recharge/addRecharge')}',{price:price,status:status},function(res){
+    		if (res.code == 200) {
+    			layer.msg(res.msg,{icon: 1, time: 2000},function(){
+    				window.location.reload();
+    			});
+    		}else{
+    			layer.msg(res.msg,{icon: 0, time: 2000});
+    		}
+    	})
+    }
+
+    function dels(obj,id){
+    	layer.confirm('确认要删除？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post('{:url('recharge/delRecharge')}',{id:id},function(res){
+	    		if (res.code == 200) {
+	    			var link = obj.parents("tr");
+	                link.remove();
+	    			layer.msg(res.msg,{icon: 1, time: 2000});
+	    		}else{
+	    			layer.msg(res.msg,{icon: 0, time: 2000});
+	    		}
+	    	})
+        });
+    }
+
+    function isNum(num){
+    	if(num === "" || num ==null){
+	        return false;
+	    }
+	    if(!isNaN(num)){
+	        return true;
+	    }else{
+	        return false;
+	    }
+    }
+	</script>
+
+</body>
+</html>

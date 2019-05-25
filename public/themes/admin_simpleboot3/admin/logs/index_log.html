@@ -1,0 +1,48 @@
+<include file="public@header" />
+<style type="text/css">
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle!important;
+    }
+</style>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:url('logs/payLogs')}">支付日志列表</a></li>
+    </ul>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th >会员id</th>
+            <th >会员昵称</th>
+            <th >会员电话</th>
+            <th>方法路由</th>
+            <th>支付详情</th>
+            <th >操作时间</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="v">
+            <tr style="height: 55px;">
+                <td>{$v.id}</td>
+                <td>{$v.member_id}</td>
+                <td>{$v.user_name}</td>
+                <td>{$v.mobile}</td>
+                <td>{$v.action_path}</td>
+                <td>{$v.content}</td>
+                <td>{$v.addtime}</td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination" style="float: left">
+        {$page}
+    </div>
+
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+
+</body>
+</html>

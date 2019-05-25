@@ -1,0 +1,200 @@
+<include file="public@header"/>
+</head>
+<body>
+<div class="wrap js-check-wrap">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="{:url('Bespoke/list')}">预约列表</a></li>
+    </ul>
+    <form class="well form-inline margin-top-20" method="get"
+          action="{:url('Bespoke/list')}">
+        手机号:
+        <input type="text" class="form-control" name="search" style="width: 120px;" value="{$search}">
+        <input type="hidden" name="is_pan" value="1">
+        所属店铺:
+        <select class="form-control" name="shop_id">
+            <option value="">请选择</option>
+            <foreach $shoplist as $v>
+                <option
+                <if condition="$shop_id == $v.id">selected</if>
+                value="{$v.id}">{$v.name}</option>
+            </foreach>
+        </select>
+        服务人员:
+        <select class="form-control" name="workid">
+            <option value="">请选择</option>
+            <foreach $workerlist as $v>
+                <option
+                <if condition="isset($workid)&&$workid == $v.id">selected</if>
+                value="{$v.id}">{$v.name}</option>
+            </foreach>
+        </select>
+        预约项目:
+        <select class="form-control" name="service_id">
+            <option value="-1">请选择</option>
+            <foreach $service_list as $v>
+                <option
+                <if condition="isset($service_id)&&$service_id == $v.id">selected</if>
+                value="{$v.id}">{$v.sname}</option>
+            </foreach>
+        </select>
+        状态:
+        <select class="form-control" name="status">
+            <option value="-10">请选择</option>
+            <option value="0" <if condition="isset($status)&&$status==0">selected</if>>已预约</option>
+            <option value="1" <if condition="isset($status)&&$status==1">selected</if>>已完成</option>
+            <option value="3" <if condition="isset($status)&&$status==3">selected</if>>已取消</option>
+        </select>
+        支付方式:
+        <select class="form-control" name="pay_way">
+            <option value="">请选择</option>
+            <option value="1" <if condition="isset($pay_way)&&$pay_way==1">selected</if>>微信</option>
+            <option value="2" <if condition="isset($pay_way)&&$pay_way==2">selected</if>>支付宝</option>
+            <option value="3" <if condition="isset($pay_way)&&$pay_way==3">selected</if>>会员卡</option>
+            <option value="4" <if condition="isset($pay_way)&&$pay_way==4">selected</if>>银行卡</option>
+            <option value="5" <if condition="isset($pay_way)&&$pay_way==5">selected</if>>现金</option>
+        </select>
+        <input type="submit" class="btn btn-primary" value="搜索"/>
+        <button class="btn btn-danger" id="reset">清空</button>
+    </form>
+    <table class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th width="50">ID</th>
+            <th>预约人手机号</th>
+            <th>预约服务人员</th>
+            <th>预约项目</th>
+            <th>预约门店</th>
+            <th>预约时间</th>
+            <th>状态</th>
+            <th>支付方式</th>
+            <th>预约客户</th>
+            <th>价格</th>
+            <th>添加时间</th>
+            <th width="130">操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        <foreach name="list" item="vo">
+            <tr>
+                <td>{$vo.id}</td>
+                <td>{$vo.mobile}</td>
+                <td date="{$vo.id}"><span class="jing">{$vo.name}</span></td>
+                <!--<if condition="$vo['type'] eq 0">-->
+                    <!--<td>游泳</td>-->
+                    <!--<elseif condition="$vo['type'] eq 1">-->
+                        <!--<td>推拿</td>-->
+                        <!--<elseif condition="$vo['type'] eq 2">-->
+                            <!--<td>成人推拿</td>-->
+                <!--</if>-->
+                <foreach $service_list as $v>
+                    <if condition="$vo['type']==$v.id"><td>{$v.sname}</td></if>
+                </foreach>
+                <td>{$vo.shop_name}</td>
+                <td>{$vo.yytime}</td>
+                <if condition="$vo['status'] eq 0">
+                    <td>已预约</td>
+                    <elseif condition="$vo['status'] eq 1">
+                        <td>已完成</td>
+                        <elseif condition="$vo['status'] eq 2">
+                            <td>已过期</td>
+                            <elseif condition="$vo['status'] eq 3">
+                                <td>已取消</td>
+                </if>
+                </if>
+                <if condition="$vo['pay_way'] eq 0">
+                    <td>--</td>
+                </if>
+                <if condition="$vo['pay_way'] eq 1">
+                    <td>微信支付</td>
+                </if>
+                <if condition="$vo['pay_way'] eq 2">
+                    <td>支付宝支付</td>
+                </if>
+                <if condition="$vo['pay_way'] eq 3">
+                    <td>会员卡支付</td>
+                </if>
+                <td>{$vo.nickname}</td>
+                <td>{$vo.amount}</td>
+                <td>{$vo.addtime}</td>
+                <td>
+                    <if condition="$vo['status'] eq 0">
+                        <a href="{:url('Bespoke/cancel',array('id'=>$vo['id']))}">取消</a>
+                        <!-- <a href="{:url('Bespoke/complete',array('id'=>$vo['id']))}">完成</a> -->
+                        <a href="javascript:void (0);"
+                           onclick="edit_advert('编辑广告','{:url('Bespoke/complpage',array('id'=>$vo['id'],'workerid'=>$vo['workerid']))}',500,300)">完成</a>
+                        <else/>
+                        订单已结束
+                    </if>
+                </td>
+            </tr>
+        </foreach>
+        </tbody>
+    </table>
+    <div class="pagination">{$page}</div>
+</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    function edit_advert(title, url, w, h) {
+        layer_show(title, url, w, h);
+    }
+
+    $(function () {
+        $('#shopchange').change(function () {
+            $('#from').submit();
+        });
+        $('#reset').click(function(){
+            $('input[name=search]').val('')
+            $('select[name=shop_id]').val('')
+            $('select[name=workid]').val('')
+            $('select[name=service_id]').val('')
+            $('select[name=status]').val('')
+            $('select[name=pay_way]').val('')
+        })
+    })
+    $(document).on('click', '.jing', function () {
+        old_val = $(this).html();
+        $(this).parent().html("<input class='uid' type=\'text\' value=" + old_val + ">");
+        $(document).on('blur', '.uid', function () {
+            var obj = $(this);
+            var id = $(this).parent().attr('date'); //获取要修改内容的id
+            var val = $(this).val(); //获取修改后的值
+            console.log(id);
+            console.log(val);
+            $.ajax({
+                type: 'post',
+                url: "{:url('Bespoke/waiter')}",
+                data: {
+                    id: id,
+                    name: val
+                },
+                success: function (msg) {
+                    if (msg == 1) {
+                        obj.parent().html("<span class='jing'>" + val + "</span>");
+                    } else if (msg == 0) {
+                        obj.parent().html("<span class='jing'>" + old_val + "</span>");
+                    } else if (msg == 2) {
+                        art.dialog({
+                            content: "没有这个员工",
+                            icon: 'warning',
+                            ok: function () {
+                                this.title("没有这个员工");
+                                return true;
+                            }
+                        });
+                    } else if (msg == 3) {
+                        art.dialog({
+                            content: "员工不属于这个门店",
+                            icon: 'warning',
+                            ok: function () {
+                                this.title("员工不属于这个门店");
+                                return true;
+                            }
+                        });
+                    }
+                }
+            })
+        })
+    })
+</script>
+</body>
+</html>

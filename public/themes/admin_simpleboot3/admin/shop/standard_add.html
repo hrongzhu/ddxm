@@ -1,0 +1,153 @@
+<include file="public@header" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/webuploader/webuploader.css">
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<!--<li><a href="{:url('Shop/standard')}">服务及参考价格列表</a></li>-->
+		</ul>
+		<div class="form-horizontal margin-top-20">
+		    <div class="form-group">
+				<label class="col-sm-2 control-label"><span class="form-required">*</span>服务名称</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="sname">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">条码形(选填)</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="bar_code" value="0" >
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><span class="form-required">*</span>服务图标</label>
+				<div class="col-md-6 col-sm-10" id="pickIcon">+ 选择图标</div>
+				<div class="col-sm-10">
+					<div id="icons" class="uploader-list" style="margin-left: 20%;">
+						<div>
+							<img src="" id="show-icon" style="height:80px;width:120px;margin-bottom: 10px" alt="">
+							<input type="hidden" id="icon" value="">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><span class="form-required">*</span>服务图片</label>
+				<div class="col-md-6 col-sm-10" id="pickCover">+ 选择图片</div>
+				<div class="col-sm-10">
+					<div id="covers" class="uploader-list" style="margin-left: 20%;">
+						<div>
+							<img src="" id="cover-img" style="height:80px;width:120px;margin-bottom: 10px" alt="">
+							<input type="hidden" id="cover" value="">
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><span class="form-required">*</span>会员等级参考价</label>
+				<div class="col-md-6 col-sm-10">
+					<table class="table table-hover table-bordered" id="level_price">
+						<tbody>
+							<tr style="height: 50px;">
+								<foreach name="lists" item="vo">
+									<td class="btn-primary" style="align:center" data-level-id="{$vo.id}">{$vo.level_name}</td>
+								</foreach>
+							</tr>
+							<tr style="height: 50px;">
+								<foreach name="lists" item="v">
+									<td><input type="text" class="form-control" data-id="{$v.id}" name="level_id[]"></td>
+								</foreach>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label"><span class="form-required">*</span>服务描述</label>
+				<div class="col-md-6 col-sm-10">
+					<textarea cols="30" rows="10" id="remark" class="form-control"></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button id="save" class="btn btn-primary">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/webuploader/webuploader.min.js"></script>
+</body>
+<script type="text/javascript">
+	$(function(){
+		$('#save').click(function(){
+            let data = {
+                sname:'',
+                icon:'',
+                cover:'',
+                bar_code:0,
+                level_price:{},
+                remark:''
+            };
+            $.each($('#level_price tr'),function(kk,vv){
+                $.each($(this).find('td'),function(kk,vv){
+                    var current = $(this);
+                    if($('#level_price tr:eq(0) td:eq('+kk+')').attr('data-level-id')!=null){
+                        data.level_price[$('#level_price tr:eq(0) td:eq('+kk+')').attr('data-level-id')] = $.trim(current.find('input').val())
+                    }
+                })
+            })
+            data.sname = $('#sname').val();
+            data.icon = $('#icon').val();
+            data.cover = $('#cover').val();
+            data.barcode = $('#bar_code').val();
+            data.remark = $.trim($('#remark').val());
+			$.post("{:url('Shop/standard_save')}",{data},function(res){
+				if (res.code === 200){
+				    layer.msg(res.msg,{icon:1,time:1500},function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+				} else{
+				    layer.msg(res.msg,{icon:2,time:1500});
+				}
+			})
+		});
+
+		//文件上传
+		var cover = createUploader('#pickCover');
+        cover.on('uploadSuccess', function (file, res) {
+            if(res.code === 200){
+                layer.msg(res.msg, {icon: 1, time: 2000});
+                $('#cover').val(res.data.path);
+                $('#cover-img').attr('src',res.data.show_path);
+            }else{
+                layer.msg(res.msg, {icon: 2, time: 2000});
+            }
+        });
+        var icon = createUploader('#pickIcon');
+        icon.on('uploadSuccess', function (file, res) {
+            if(res.code === 200){
+                layer.msg(res.msg, {icon: 1, time: 2000});
+                $('#icon').val(res.data.path);
+                $('#show-icon').attr('src',res.data.show_path);
+            }else{
+                layer.msg(res.msg, {icon: 2, time: 2000});
+            }
+        });
+	});
+    function createUploader(pick_btn) {
+        var domian = "<?php echo $_SERVER['HTTP_HOST']; ?>"
+		return WebUploader.create({
+            auto: true,
+            swf: 'https://cdn.staticfile.org/webuploader/0.1.5/Uploader.swf',
+            server: 'http://'+domian+"{:url('Base/uploadImgToFileService')}",
+            pick: pick_btn,
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,54 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<form action="{:url('Member/updatCard')}" method="post" id="form-edit">
+			<input type="hidden" name="id" value="{$id|default=0}">
+			<input type="hidden" name="yxq" value="{$sy_day|default=0}">
+			<div class="form-group">
+				<label for="mobile">余额</label>
+				<input type="text" name="my_num" class="form-control" value="{$cardinfo.my_num|default=''}" id="my_num" placeholder="">
+			</div>
+
+			<div class="form-group">
+				<label for="nickname">剩余有效期天数</label>
+				<input type="text" name="sy_day" class="form-control" value="{$cardinfo.sy_day|default=''}" id="sy_day" placeholder="">
+			</div>
+			<button type="submit" class="btn btn-default">提交</button>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript" src="/ddxm_admin/public/plugins/h-ui/js/H-ui.min.js"></script>
+	<script type="text/javascript">
+
+        $(function () {
+            /*管理员-编辑*/
+            function admin_edit(title, url, w, h) {
+                layer_show(title, url, w, h);
+            }
+
+            $('#form-edit').bind('submit', function () {
+                $("#form-edit").ajaxSubmit(function (result) {
+                    if (result.code == 200) {
+
+                        layer.msg(result.msg, {
+                            icon: 1,
+                            time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                        }, function () {
+                            window.parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(index);
+                        });
+                    } else {
+                        layer.msg(result.msg, {
+                            icon: 0,
+                            time: 1500 //2秒关闭（如果不配置，默认是3秒）
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+	</script>
+</body>
+</html>

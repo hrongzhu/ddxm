@@ -1,0 +1,53 @@
+<include file="public@header" />
+</head>
+<body>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<style type="text/css">
+    body{ font-size:12px;}
+    .l-table-edit {}
+    .l-table-edit-td{ padding:4px;}
+    .l-button-submit,.l-button-test{width:80px; float:left; margin-left:10px; padding-bottom:2px;}
+    .l-verify-tip{ left:230px; top:120px;}
+</style>
+<div class="table wrap js-check-wrap">
+    <form action="{:url('admin/User/bindShop')}" id="form" method="post" class="form-horizontal  margin-top-20 js-ajax-form" enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label class="col-sm-2 control-label">选择店铺</label>
+            <div class="col-md-6 col-sm-10">
+                <foreach name="shopInfo" item="vo">
+                    <label class="checkbox-inline">
+                        <php>$role_id_checked=in_array($vo['id'],$shop_id)?"checked":"";</php>
+                        <input value="{$vo.id}" type="checkbox" name="shop_id[]" {$role_id_checked} >{$vo.name}
+                    </label>
+                </foreach>
+                <!--<p class="help-block">店铺名称</p>-->
+            </div>
+        </div>
+
+        <input type="hidden" name="user_id" value="{$user_id|default=''}">
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary js-ajax-submit">{:lang('SAVE')}</button>
+            </div>
+        </div>
+        <br>
+
+    </form>
+</div>
+<div style="display:none">
+    <script src="__STATIC__/js/admin.js"></script>
+    <!--<script type="text/javascript" src="https://cdn.staticfile.org/webuploader/0.1.5/webuploader.js"></script>-->
+    <!--<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.config.js"></script>-->
+    <!--<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.all.min.js"></script>-->
+</div>
+<script type="text/javascript">
+    //编辑器路径定义
+//    var editorURL = GV.WEB_ROOT;
+</script>
+
+<script type="text/javascript">
+
+</script>
+</body>
+</html>

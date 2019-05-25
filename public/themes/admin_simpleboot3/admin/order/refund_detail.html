@@ -1,0 +1,277 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<table class="table table-hover table-bordered">
+			<thead>
+			<tr class="info">
+				<th >商品图片</th>
+				<th >商品名称</th>
+				<th >是否跨境</th>
+				<th >属性</th>
+				<th >销售价格</th>
+				<th >门店进价</th>
+				<th >数量</th>
+			</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><img width="50px" src="{$info.thumb}"></td>
+					<td><a href="http://dd.ddxm661.com/wechat/item/itemDetail?id={$info.goods_id}">{$info.title}</a></td>
+					<td>
+						<if condition="$info.type == 3">
+							是
+						<else/>
+							否
+						</if>
+					</td>
+					<td>
+						{$info.attr_name}，<br/>
+						{$info.attr_names}
+					</td>
+					<td>{$info.price}</td>
+					<td>{$info.oldprice}</td>
+					<td>{$info.goods_num}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="wrap js-check-wrap">
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td class="text-right">
+					服务单号
+				</td>
+				<td class="text-left">
+					{$info.as_sn}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					申请状态
+				</td>
+				<td class="text-left btn-warning" >
+					{$info.status == 1?"已处理":"待处理"}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					订单编号
+				</td>
+				<td class="text-left" >
+					{$info.order_info.sn|default=''} <a href="{:url('order/detail',['id'=>$info.order_id])}" class="hover">查看</a>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					申请时间
+				</td>
+				<td class="text-left" >
+					{$info.add_time}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					联系人
+				</td>
+				<td class="text-left" >
+					{$info.order_info.realname|default=''}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					联系电话
+				</td>
+				<td class="text-left" >
+					{$info.order_info.mobile|default=''}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					支付方式
+				</td>
+				<td class="text-left" >
+					{$info.order_info.pay_way|default=''}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					收获方式
+				</td>
+				<td class="text-left" >
+					<if condition="!empty($info.order_info)">
+						<if condition="$info.order_info.send_way == 0">
+							门店发货
+						<elseif condition="$info.order_info.send_way == 1">
+							门店自提
+						<elseif condition="$info.order_info.send_way == 2">
+							仓库代发货
+						</if>
+						<else/>
+						数据错误
+					</if>
+
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					问题描述
+				</td>
+				<td class="text-left" >
+					{$info.content}
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					问题图片
+				</td>
+				<td class="text-left" >
+					<if condition="is_array($info.pic)">
+						<foreach name = "$info.pic" item="v">
+							<img src="{$v|default='http://dd.ddxm661.com/static/images/bg.png'}"  height="60px">
+						</foreach>
+					<else/>
+						<img src="{$info.pic|default='http://dd.ddxm661.com/static/images/bg.png'}"  height="60px">
+					</if>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="wrap js-check-wrap">
+		<table class="table table-hover table-bordered">
+			<tr>
+				<td class="text-right">
+					收货信息
+				</td>
+				<td class="text-left">
+					<div class="form-group">
+						<input type="text" class="form-control" id="detail_address" name="detail_address" placeholder="{$info.order_info.detail_address|default=''}">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					商品数量
+				</td>
+				<td class="text-left" >
+					<div class="form-group">
+						<input type="text" class="form-control" id="goods_num" name="num" value="{$info.goods_num}">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					商品总额
+				</td>
+				<td class="text-left" >
+					￥{$info.goods_num * $info.price}
+					<input type="hidden" id="goods_price" value="{$info.goods_num * $info.price}">
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					退运费
+				</td>
+				<td class="text-left" >
+					<div class="form-group" >
+						<input type="radio" class="radio1" checked name="is_tui" value="0">不退运费 &emsp;
+						<input type="radio" class="radio1" name="is_tui" value="1">退运费 &emsp; ￥{$info.order_info.postage|default=''}
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					确认退款金额
+				</td>
+				<td class="text-left" >
+					<div class="form-group">
+						<input type="text" class="form-control" id="zprice" name="zprice" value="{$info.r_price|default=''}">
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="text-right" style="width: 20%">
+					处理结果
+				</td>
+				<td class="text-left" colspan="2">
+					<div class="form-group">
+						<textarea name="staff_reply" id="staff_reply" cols="50" rows="10">
+							{$info.staff_reply|default=""}
+						</textarea>
+					</div>
+				</td>
+			</tr>
+			<if condition="$info.status == 1">
+
+			<else/>
+				<tr>
+					<td></td>
+					<td class="text-left" colspan="2">
+						<div class="pagination">
+							<button class="btn btn-warning" id="sure1" >拒绝退货</button> &emsp;&emsp;&emsp;
+							<button class="btn btn-success" id="sure" >同意处理</button>
+						</div>
+					</td>
+				</tr>
+			</if>
+		</table>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*管理员-编辑*/
+   $(function(){
+       $('#sure').click(function () {
+           var price = $('#zprice').val();
+           var is_tui=$('input:radio[name="is_tui"]:checked').val();
+           if (price == ''){
+               if(is_tui == 1){
+                   price =  "{$info.order_info.postage|default=0} + {$info.price|default=0} * {$info.goods_num|default=0}";
+               }else{
+                   price = "{$info.price * $info.goods_num}";
+               }
+		   }
+		   var staff_reply = $('#staff_reply').val();
+           if(staff_reply == ''){
+               layer.msg('请输入处理结果信息', {icon: 0,time:1000});
+		   }
+           var id = "{$info.as_id}";
+           var is_deal = 1;
+		   $.post("{:url('order/refundDealwith')}",{'id':id,'price':price,'staff_reply':staff_reply,'is_deal':is_deal},function (res) {
+			   	if (res.code == 200){
+                    layer.msg(res.msg, {icon: 1,time:2000},function () {
+                        window.parent.location.reload();
+//                        var index = parent.layer.getFrameIndex(window.name);
+//                        parent.layer.close(index);
+                    });
+				}else{
+                    layer.msg(res.msg, {icon: 0,time:1000});
+				}
+           })
+       });
+       $('#sure1').click(function () {
+           var staff_reply = $('#staff_reply').val();
+           if(staff_reply == ''){
+               layer.msg('请输入处理结果信息', {icon: 0,time:1000});
+           }
+           var id = "{$info.as_id}";
+           var is_deal = 0;
+           $.post("{:url('order/refundDealwith')}",{'id':id,'staff_reply':staff_reply,'is_deal':is_deal},function (res) {
+               if (res.code == 200){
+                   layer.msg(res.msg, {icon: 1,time:2000},function () {
+                       window.parent.location.reload();
+//                        var index = parent.layer.getFrameIndex(window.name);
+//                        parent.layer.close(index);
+                   });
+               }else{
+                   layer.msg(res.msg, {icon: 0,time:1000});
+               }
+           })
+       })
+   })
+
+    function show_pic(str){
+        layer_show('身份证照片',str,800,400);
+	}
+</script>
+</body>
+</html>

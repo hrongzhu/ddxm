@@ -1,0 +1,194 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<ul class="nav nav-tabs">
+			<li><a href="{:url('card/getCouponList')}">体验券列表</a></li>
+			<li class="active"><a href="{:url('Coupon/coupon_add')}">体验券添加</a></li>
+		</ul>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Coupon/couponAddPost')}" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="coupon-name" class="col-sm-2 control-label"><span class="form-required">*</span>体验券名称</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="coupon-name" name="title">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="shop" class="col-sm-2 control-label"><span class="form-required">*</span>选择店铺</label>
+				<div class="col-md-6 col-sm-10">
+					<select  name="shop" class="form-control" id="shop">
+					    <foreach name="shop_list" item="vo">
+						   <option value="{$vo.id}">{$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="price" class="col-sm-2 control-label"><span class="form-required">*</span>价格</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="price" name="price">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="limit-num" class="col-sm-2 control-label"><span class="form-required">*</span>限领量</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="limit-num" name="limit-num">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="can-use" class="col-sm-2 control-label"><span class="form-required">*</span>有效期</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="can-use" name="can-use">
+				</div>
+			</div>
+			<div class="form-group">
+			    <label class="col-sm-2 control-label">是否上架</label>
+				<div class="col-md-6 col-sm-10">
+					<label class="radio-inline">
+						<input type="radio" name="status" value="1"> 是
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="status" value="0"> 否
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+			<label class="col-sm-2 control-label">图片上传</label>
+			<div class="col-sm-2 control-label">
+				<table class="table table-bordered" style="float: left;">
+					<?php
+                        if(!empty($list->mainPic)){
+					$arr = json_decode($list->mainPic,1);
+					if(is_array($arr)){
+					foreach ($arr as $key => $value) {
+					?>
+					<div>
+						<img src="http://dd.ddxm661.com/library/admin/images/img.png" id="mainPic">
+						<input type="hidden" name="mainPic[]" value="<?php echo $value;?>">
+						<a href="javascript:;" onclick="moveImg(this)">删除</a>
+					</div>
+					<?php
+                            }
+                            }
+                        }
+                        ?>
+					<input type="file" id="files" name="files[]" ltype="text"  multiple="multiple" />
+					<input type="button" value=" 上传 " onclick="more_upload()" />
+					(最多上传1张)
+				</table>
+            </div>
+            </div>
+			<div class="form-group">
+				<label for="coupon-intro" class="col-sm-2 control-label"><span class="form-required">*</span>体验券说明</label>
+				<div class="col-md-6 col-sm-10">
+					<script type="text/plain" id="coupon-intro" name="coupon-intro"></script>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script>
+        var editorURL = GV.WEB_ROOT;
+	</script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.all.min.js"></script>
+	<script type="text/javascript">
+        $(function () {
+            editorcontent = new baidu.editor.ui.Editor();
+            editorcontent.render('coupon-intro');
+            try {
+                editorcontent.sync();
+            } catch (err) {
+            }
+
+            $('.btn-cancel-thumbnail').click(function () {
+                $('#thumbnail-preview').attr('src', '__TMPL__/public/assets/images/default-thumbnail.png');
+                $('#thumbnail').val('');
+            });
+        });
+
+        // 多图上传
+        function more_upload(){
+            var i = 0;
+            var s = '';
+            $("img[id=mainPic]").each(function(n,e){
+                i++;
+            })
+            var formData = new FormData();
+            upfile = $("#files")[0].files;
+            var ii = 1;
+            $(upfile).each(function (n, e) {
+                i++;
+                if(i>1){
+                    alert("上传图片不能超过1张");
+                    clearInterval(s);
+                    return false;
+                }
+                var s = setTimeout(function () {
+                    formData.append('file', $(e)[0]);
+                    upload_img(2, formData);
+                }, ii);
+                ii += 1000;
+            });
+        }
+        // 上传图片
+        function upload_img(id,formData){
+
+            var file =  $("#lfile").val();
+            // var files =  $("#files").val();
+
+            if((file =='' || file == null) && id==1){
+                alert("请选择上传文件");
+                return false;
+            }else{
+                var upfile = '';
+                if(id==1){
+                    var formData = new FormData();
+                    upfile = $("#lfile")[0].files[0];
+                    formData.append('file',upfile);
+                }
+                $.ajax({
+                    url: "{:url('Item/uploadPic')}",
+                    type: "POST",
+                    data: formData,
+                    dataType:'json',
+                    processData : false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+                    contentType : false, // 不设置Content-type请求头
+                    success: function(data) {
+                        if(data.success==1){
+                            // $(".imgList").append($(".imgList>div:first-child").clone());
+                            if(id==1){
+                                $("#thumb").val(data.msg);
+                                $("#showThumb").attr('src',data.msg);
+                            }else{
+                                var img = '<div><img src="'+data.msg+'" id="mainPic" style="width:140px;height:70px;">';
+                                img += '<input type="hidden" name="mainPic[]" value="'+data.msgurl+'"><a href="javascript:;" onclick="moveImg(this)">删除</a></div>'
+                                $('#files').before(img);
+                                $("#files").val('');
+                                // $("#mainPic").val(data.msg);
+                                // $("#showPic").attr('src',data.msg);
+                            }
+                        }else{
+                            alert(data.msg);
+                        }
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                        alert("上传失败，请检查网络后重试");
+                    }
+                });
+            }
+        }
+        function moveImg(str){
+            $(str).parent().remove();
+        }
+
+	</script>
+</body>
+</html>

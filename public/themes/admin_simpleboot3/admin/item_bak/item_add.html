@@ -1,0 +1,450 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<ul class="nav nav-tabs">
+			<li><a href="{:url('Item/item_list')}">商品列表</a></li>
+			<li class="active"><a href="{:url('Item/item_add')}">商品添加</a></li>
+		</ul>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Item/item_addPost')}" enctype="multipart/form-data">
+		    <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品名称</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="title">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品简介</label>
+				<div class="col-md-6 col-sm-10">
+					<textarea type="text" class="form-control" id="input-remark" name="subtitle"></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>选择专区</label>
+				<div class="col-md-6 col-sm-10">
+					<select  name="type_id" class="form-control" id="input-parent_id">
+						<option value="0">请选择分区</option>
+					    <foreach name="part_list" item="vo">
+						   <option value="{$vo.id}">{$vo.title}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-parent_id" class="col-sm-2 control-label"><span class="form-required">*</span>商品分类</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control selectboy" id="input-parent_id">
+                        <option value="0">请选择分类</option>
+                        <foreach name="Ylian_list" item="vo">
+                           <option value="{$vo.id}">{$vo.cname}</option>
+                        </foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-parent_id" class="col-sm-2 control-label"><span class="form-required">*</span>商品二级分类</label>
+				<div class="col-md-6 col-sm-10">
+					<select class="form-control selectson" name="type" id="input-parent_id">
+                        <option value="0">请选择分类</option>
+					</select>
+				</div>
+			</div>
+			<!-- <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>选择运费模板</label>
+				<div class="col-md-6 col-sm-10">
+					<select  name="lvid" class="form-control" id="input-parent_id">
+						<option value="0">商品没有税收</option>
+					    <foreach name="lv_list" item="vo">
+						   <option value="{$vo.id}">{$vo.title}</option>
+						</foreach>
+					</select>
+				</div>
+			</div> -->
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>选择税率模板</label>
+				<div class="col-md-6 col-sm-10">
+					<select  name="lvid" class="form-control" id="input-parent_id">
+						<option value="0">商品没有税收</option>
+					    <foreach name="lv_list" item="vo">
+						   <option value="{$vo.id}">{$vo.title}</option>
+						</foreach>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品视屏链接</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="cname">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品属性1</label>
+				<div class="col-md-6 col-sm-10">
+				<input type="text" id="input-name" class="attr_type" name="attr_type" value="" placeholder="请输入属性类别">
+				<input type="text" id="input-name" class="one" name="skuname1[]" value="" placeholder="请输入属性参数">
+				<a class="delete"><span style="color: blue;">删除</span></a>
+				<a class="addsku"><span style="color: blue;">添加</span></a>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品属性2</label>
+				<div class="col-md-6 col-sm-10">
+				<input type="text" id="input-name" class="attr_types" name="attr_types" value="" placeholder="请输入属性类别">
+				<input type="text" id="input-name" class="one" name="skuname2[]" value="" placeholder="请输入属性参数">
+				<a class="delete"><span style="color: blue;">删除</span></a>
+				<a class="addsku"><span style="color: blue;">添加</span></a>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>属性添加表格</label>
+				<div id="tablea">
+					<span id="tabless">生成表格</span>
+				</div>
+			</div>
+			<!-- <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>可用券</label>
+				<div class="col-md-6 col-sm-10">
+					<select  name="coupon_id[]" id="input-parent_id" class="one">
+					    <foreach name="coupon_list" item="vo">
+						   <option value="{$vo.id}">{$vo.title}</option>
+						</foreach>
+					</select>
+					<a class="delete"><span style="color: blue;">删除</span></a>
+					<a class="add"><span style="color: blue;">添加</span></a>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>赠送券</label>
+				<div class="col-md-6 col-sm-10">
+					<select  name="send_coupon[]" id="input-parent_id" class="one">
+					    <foreach name="coupon_list" item="vo">
+						   <option value="{$vo.id}">{$vo.title}</option>
+						</foreach>
+					</select>
+					<a class="delete"><span style="color: blue;">删除</span></a>
+					<a class="add"><span style="color: blue;">添加</span></a>
+				</div>
+			</div> -->
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>销量</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="sales">
+				</div>
+			</div>
+			<!-- <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>限购量</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="limit_num">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>可抵用(通用劵，百分比)</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="discount">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>可抵用(商品券，百分比)</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="dis_special">
+				</div>
+			</div>
+			<div class="form-group">
+			    <label class="col-sm-2 control-label">是否包邮</label>
+				<div class="col-md-6 col-sm-10">
+					<label class="radio-inline">
+						<input type="radio" name="shipping" value="1"> 是
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="shipping" value="0"> 否
+					</label>
+				</div>
+			</div> -->
+			<div class="form-group">
+			    <label class="col-sm-2 control-label">{:lang('STATUS')}</label>
+				<div class="col-md-6 col-sm-10">
+					<label class="radio-inline">
+						<input type="radio" name="status" value="1" checked="checked"> {:lang('ENABLED')}
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="status" value="0"> {:lang('DISABLED')}
+					</label>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">商品主图</label>
+				<div class="col-md-6 col-sm-10">
+					<table class="table table-bordered" style="float: left;">
+	                    <?php
+                        if(!empty($list->mainPic)){
+                            $arr = json_decode($list->mainPic,1);
+                            if(is_array($arr)){
+                            foreach ($arr as $key => $value) {
+                        ?>
+                        <div>                               
+                            <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="mainPic">
+                            <input type="hidden" name="mainPic[]" value="<?php echo $value;?>">
+                            <a href="javascript:;" onclick="moveImg(this)">删除</a>
+                        </div>
+                        <?php
+                            }
+                            }
+                        }
+                        ?>
+                        <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="showPic">
+                        <input type="file" id="files" name="files[]" ltype="text"  multiple="multiple"/>    
+                        <input type="button" value=" 上传 " onclick="more_upload()"/>  
+                        (最多上传5张)
+                    </table>
+	            </div>
+            </div>
+            <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品详情</label>
+				<div class="col-md-6 col-sm-10">
+					<script type="text/plain" id="content" name="content"></script>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+    //编辑器路径定义
+    var editorURL = GV.WEB_ROOT;
+	</script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.all.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+
+	        editorcontent = new baidu.editor.ui.Editor();
+	        editorcontent.render('content');
+	        try {
+	            editorcontent.sync();
+	        } catch (err) {
+	        }
+
+	        $('.btn-cancel-thumbnail').click(function () {
+	            $('#thumbnail-preview').attr('src', '__TMPL__/public/assets/images/default-thumbnail.png');
+	            $('#thumbnail').val('');
+	        });
+
+	    });
+	    //添加和删除事件
+	    $(function(){
+	    	$('.add').click(function(){
+                var  name = $(this).prev().prev().attr('name');
+	    		var  html="<select  name='"+name+"' id='input-parent_id'><foreach name='coupon_list' item='vo'><option value='{$vo.id}'>{$vo.title}</option></foreach></select>";
+	    		$(this).prev().before(html);
+	    	})
+	    	$('.addsku').click(function(){
+                var  name = $(this).prev().prev().attr('name');
+	    		var  html="<input type='text' id='input-name' name="+name+" value=''  placeholder='请输入属性参数'>";
+	    		$(this).prev().before(html);
+	    	})
+	    	$('.delete').click(function(){
+	    		var name=$(this).prev().attr('class');
+	    		
+	    		if($(this).prev().attr('class')=='one'){
+	    			alert('不能删除');
+	    		}else{
+	    			$(this).prev().remove();
+	    		}
+	    	})
+	    })
+	    //添加表格
+	    $(function(){
+	    	$('#tabless').click(function(){
+	    		var skuname1 = $("input[name='skuname1[]']");
+	    		var skuname2 = $("input[name='skuname2[]']");
+                var attr_type = $(".attr_type").val();
+                var attr_types = $(".attr_types").val();
+                console.log(attr_type);
+	    		var head = "<table border='none'><tbody><tr><td>"+attr_type+"</td><td>"+attr_types+"</td><td>库存</td><td>重量</td><td>价格</td><td>进价</td></tr>";
+	    		var foot = "</tbody></table>";
+	    		var tr   = '';
+                
+                if(skuname1.val()==''){
+                	alert('请添加属性');
+                }else{
+                //console.log("%o", skuname1);
+
+		    		for (var i = 0; i < skuname1.length; i++) {
+		    			for (var is = 0; is < skuname2.length; is++) {
+		    				tr += "<tr><td><input type='text' name='sku1[]' value='"+$(skuname1[i]).val()+"'></td><td><input type='text' name='sku2[]' value='"+$(skuname2[is]).val()+"'></td><td><input type='text' name='skunum[]' value=''></td><td><input type='text' name='skuwig[]' value='' ></td><td><input type='text' name='skuprice[]' value='' ></td><td><input type='text' name='skuoldprice[]' value='' ></td></tr>";
+		    			}
+		    		}
+		    		var table = head+tr+foot;
+
+		    		$('#tablea').html(table);
+	    	    }
+	    	})
+	    	
+	    })
+	    // 多图上传
+		function more_upload(){
+		    var i = 0;
+		    var s = '';
+		    $("img[id=mainPic]").each(function(n,e){
+		        i++;
+		    })
+		    var formData = new FormData();
+		    upfile = $("#files")[0].files;
+		    var ii = 1;
+		    $(upfile).each(function (n, e) {
+		        i++;
+		        if(i>5){
+		            alert("上传图片不能超过5张");
+		            clearInterval(s);
+		            return false;
+		        }
+		        var s = setTimeout(function () {
+		            formData.append('file', $(e)[0]);
+		            upload_img(2, formData);
+		        }, ii);
+		        ii += 1000;
+		    });
+		}
+        // 上传图片
+		function upload_img(id,formData){
+		    
+		    var file =  $("#lfile").val();
+		    // var files =  $("#files").val();
+
+		    if((file =='' || file == null) && id==1){
+		        alert("请选择上传文件");
+		        return false;
+		    }else{      
+		        var upfile = '';
+		        if(id==1){
+		            var formData = new FormData();
+		            upfile = $("#lfile")[0].files[0];
+		            formData.append('file',upfile);
+		        }
+		        $.ajax({
+		            url: "{:url('Item/uploadPic')}",
+		            type: "POST",
+		            data: formData,
+		            dataType:'json',
+		            processData : false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+		            contentType : false, // 不设置Content-type请求头
+		            success: function(data) {
+		                if(data.success==1){
+		                    // $(".imgList").append($(".imgList>div:first-child").clone());
+		                    if(id==1){
+		                        $("#thumb").val(data.msg);
+		                        $("#showThumb").attr('src',data.msg);
+		                    }else{
+		                        var img = '<div><img src="'+data.msg+'" id="mainPic" style="width:60px;height:100px;">';
+		                        img += '<input type="hidden" name="mainPic[]" value="'+data.msgurl+'"><a href="javascript:;" onclick="moveImg(this)">删除</a></div>'
+		                        $("#showPic").before(img);
+		                        $("#files").val('');
+		                        // $("#mainPic").val(data.msg);
+		                        // $("#showPic").attr('src',data.msg);
+		                    }
+		                }else{
+		                    alert(data.msg);
+		                }
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                alert("上传失败，请检查网络后重试");
+		            }
+		        });
+		    }
+		}
+		function moveImg(str){
+		    $(str).parent().remove();
+		}
+		$(function(){
+	    	$('.selectpid').change(function(){
+	    		var pid=$('.selectpid').val();
+                //console.log(pid);
+                if(pid==0)
+                {
+                	var option = "<option>请选择分类</option>";
+                	$(".selectboy").html(option);
+                }else{
+		    		$.ajax({
+		    			url:"{:url('Item/itemYlian')}",
+		    			type:"post",
+		    			dataType: 'text',
+	                    data: {pid: pid},
+	                    success:function(data){
+	                    	var res = $.parseJSON(data);
+	                    	/*var selecthead="<select  name='sid' class='form-control' id='input-parent_id'><option value='0'>请选择</option>";
+	                    	var selectfoot="</select>";*/
+	                    	console.log(res);
+	                    	var option = "<option value='0'>请选择分类</option>";
+	                    	$.each(res,function(k,v){
+	                    		console.log(v.id);
+	                    		option += "<option value='"+v.id+"'>"+v.cname+"</option>";
+	                    		/*$.each(v.children,function(ke,va){
+	                    			if(v.id==va.pid){
+	                    				option += "<option value='"+va.id+"'>"+va.count+va.cname+"</option>";
+	                    			}
+	                    			$.each(va.children,function(key,val){
+	                    			    if(va.id==val.pid){
+	                    				    option += "<option value='"+val.id+"'>"+val.count+val.cname+"</option>";
+	                    			    }	
+	                    			});
+	                    		});*/
+	                    	});
+	                    	//var html=selecthead+med+selectfoot;
+	                    	$(".selectboy").html(option);
+	                    	/*alert(html);*/
+	                    }
+		    		})
+	        	}
+	    	})
+	    })
+	    $(function(){
+	    	$('.selectboy').change(function(){
+	    		var pid=$('.selectboy').val();
+                //console.log(pid);
+                if(pid==0)
+                {
+                	var option = "<option>请选择分类</option>";
+                	$(".selectson").html(option);
+                }else{
+		    		$.ajax({
+		    			url:"{:url('Item/itemTlian')}",
+		    			type:"post",
+		    			dataType: 'text',
+	                    data: {pid: pid},
+	                    success:function(data){
+	                    	var res = $.parseJSON(data);
+	                    	/*var selecthead="<select  name='sid' class='form-control' id='input-parent_id'><option value='0'>请选择</option>";
+	                    	var selectfoot="</select>";*/
+	                    	console.log(res);
+	                    	var option = "<option value='0'>请选择分类</option>";
+	                    	$.each(res,function(k,v){
+	                    		console.log(v.id);
+	                    		option += "<option value='"+v.id+"'>"+v.cname+"</option>";
+	                    		/*$.each(v.children,function(ke,va){
+	                    			if(v.id==va.pid){
+	                    				option += "<option value='"+va.id+"'>"+va.count+va.cname+"</option>";
+	                    			}
+	                    			$.each(va.children,function(key,val){
+	                    			    if(va.id==val.pid){
+	                    				    option += "<option value='"+val.id+"'>"+val.count+val.cname+"</option>";
+	                    			    }	
+	                    			});
+	                    		});*/
+	                    	});
+	                    	//var html=selecthead+med+selectfoot;
+	                    	$(".selectson").html(option);
+	                    	/*alert(html);*/
+	                    }
+		    		})
+	        	}
+	    	})
+	    })
+    </script>
+</body>
+</html>

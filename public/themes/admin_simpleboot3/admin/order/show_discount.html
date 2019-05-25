@@ -1,0 +1,53 @@
+<!-- 支出 -->
+<include file="public@ptheader" />
+	<div class="panel margin-top">
+		<div class="panel-head bg-main">
+			<span>订单成本</span>
+		</div>
+		<div class="panel-body">
+			<table class="table table-responsive-y table-hover table-bordered">
+				<thead>
+					<tr>
+						<th>订单id</th>
+						<th>改价前价格</th>
+						<th>改价后价格</th>
+						<th>订单邮费</th>
+						<!-- <th>改价商品数量</th> -->
+						<th>改价原因</th>
+					</tr>
+				</thead>
+				<tbody id="datas">
+					<if condition="!empty($info)">
+					<foreach $info as $v>
+						<tr>
+							<td>{$v.id}</td>
+							<td>{$v.price} 元</td>
+							<td>{$v.price - $v.disprice} 元</td>
+							<td>{$v.postage} 元</td>
+							<!-- <td>{$v.num} 元</td> -->
+							<td>{$v.content} </td>
+						</tr>
+					</foreach>
+					<else/>
+						<tr>
+							<td class="detail-head" colspan="5" style="text-align:center;">没有改价信息</td>
+						</tr>
+					</if>
+				</tbody>
+			</table>
+        </div>
+		<div class="foot">
+			<!-- <button type="button" id="close_btn" class="btn btn-default" style="float: right;">关闭</button> -->
+		</div>
+	</div>
+<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+
+	$(function(){
+		$('#close_btn').click(function(){
+			var index = parent.layer.getFrameIndex(window.name);
+	        parent.layer.close(index);
+		})
+	})
+</script>
+</include file="public@ptfooter"/>

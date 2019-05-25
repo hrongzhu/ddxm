@@ -1,0 +1,11 @@
+#sidenav li{
+    display: none;
+}
+
+#sidenav li.nav-header{
+    display: block;
+}
+
+#sidenav li.show{
+    display: block;
+}

@@ -1,0 +1,94 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('Item/type_list')}">分类列表</a></li>
+			<li><a href="{:url('Item/type_add')}">分类添加</a></li>
+		</ul>
+        <!-- <form class="well form-inline margin-top-20" method="post" action="{:url('User/index')}">
+            用户名:
+            <input type="text" class="form-control" name="user_login" style="width: 120px;" value="{:input('request.user_login/s','')}" placeholder="请输入{:lang('USERNAME')}">
+            邮箱:
+            <input type="text" class="form-control" name="user_email" style="width: 120px;" value="{:input('request.user_email/s','')}" placeholder="请输入{:lang('EMAIL')}">
+            <input type="submit" class="btn btn-primary" value="搜索" />
+            <a class="btn btn-danger" href="{:url('User/index')}">清空</a>
+        </form> -->
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>上级ID</th>
+					<th>分区</th>
+					<th>logo-URL</th>
+					<th>分类名称</th>
+					<th>状态</th>
+					<th width="160">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="type_list" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.pid}</td>
+					<td>{$vo.title}</td>
+					<td><img src="http://upload.cqddxm.com{$vo.thumb}" style="width: 60px;height: 60px;"></td>
+					<td>{$vo.count}{$vo.cname}</td>
+					<if condition="$vo['status'] eq 1">
+					<td>正常</td>
+					<else />
+					<td>禁用</td>
+					</if>
+					<td>
+					<a href="{:url('Item/itemoption',array('id'=>$vo['id']))}" class="js-ajax-delete">删除</a>
+					<a href="{:url('Item/type_edit',array('id'=>$vo['id']))}">编辑</a>
+					</td>
+				</tr>
+				<foreach name="vo.children" item="value">
+				<if condition="$value['pid'] eq $vo['id']">
+				    <tr>
+					<td>{$value.id}</td>
+					<td>{$value.pid}</td>
+					<td>{$vo.title}</td>
+					<td><img src="http://upload.cqddxm.com{$value.thumb}" style="width: 60px;height: 60px;"></td>
+					<td>{$value.count}{$value.cname}</td>
+					<if condition="$value['status'] eq 1">
+					<td>正常</td>
+					<else />
+					<td>禁用</td>
+					</if>
+					<td>
+					<a href="{:url('Item/type_delete',array('id'=>$value['id']))}" class="js-ajax-delete">删除</a>
+					<a href="{:url('Item/type_edit',array('id'=>$value['id']))}">编辑</a>
+					</td>
+				</tr>
+				</if>
+				<foreach name="value.children" item="val">
+				<if condition="$val['pid'] eq $value['id']">
+				    <tr>
+					<td>{$val.id}</td>
+					<td>{$val.pid}</td>
+					<td>{$vo.title}</td>
+					<td><img src="http://upload.cqddxm.com{$val.thumb}" style="width: 60px;height: 60px;"></td>
+					<td>{$val.count}{$val.cname}</td>
+					<if condition="$val['status'] eq 1">
+					<td>正常</td>
+					<else />
+					<td>禁用</td>
+					</if>
+					<td>
+					<a href="{:url('Item/type_delete',array('id'=>$val['id']))}" class="js-ajax-delete">删除</a>
+					<a href="{:url('Item/type_edit',array('id'=>$val['id']))}">编辑</a>
+					</td>
+				</tr>
+				</if>
+				</foreach>
+				</foreach>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination"></div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+</html>

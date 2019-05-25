@@ -1,0 +1,46 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+        
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th>会员卡名称</th>
+					<th>金额</th>
+					<th>购买用户</th>
+					<th>购买用户昵称</th>
+					<th>店铺</th>
+					<th>添加时间</th>
+					<th>支付时间</th>
+					<!-- <th width="130">操作</th> -->
+				</tr>
+			</thead>
+			<tbody>
+			<foreach name="buycard" item="vo">
+				<tr>
+					<td>{$vo.id}</td>
+					<td>{$vo.title}</td>
+					<td>{$vo.price}</td>
+					<th>{$vo.mobile}</th>
+					<th>{$vo.nickname}</th>
+					<th>{$vo.name}</th>
+					<th>{$vo.addtime}</th>
+					<th>{$vo.paytime}</th>
+				</tr>
+				</foreach>
+			</tbody>
+		</table>
+		<div class="pagination">{$page}</div>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+	    $(function(){
+	    	$('#shopchange').change(function(){
+	    		$('#from').submit();
+	    	})
+	    })
+	</script>
+</body>
+</html>

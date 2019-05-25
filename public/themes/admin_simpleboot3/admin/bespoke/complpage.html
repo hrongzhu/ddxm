@@ -1,0 +1,60 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap">
+		<!-- <form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Bespoke/waiter')}"> -->
+			<div class="form-group">
+				<label for="input-user_login" class="col-sm-2 control-label"><span class="form-required">*</span>服务人员选择</label>
+				<select  name="waiterid" class="form-control waiterid" id="input-parent_id">
+					    <foreach name="waiterlist" item="vo">
+					       <if condition="$vo['id'] eq $workerid">
+						   <option value="{$vo.id}" selected="selected">{$vo.name}</option>
+						   <else />
+						   <option value="{$vo.id}">{$vo.name}</option>
+						   </if>
+						</foreach>
+					</select>
+			</div>
+			<input type="hidden" name="yuyueid" class="yuyueid" value="{$yuyueid}">
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button class="submit">完成</button>
+				</div>
+			</div>
+		</form>
+	<!-- </div> -->
+	<script src="__STATIC__/js/admin.js"></script>
+</body>
+    <script>
+    	$(document).on('click','.submit',function(){
+	          
+	          var yuyueid = $('.yuyueid').val();
+	          var waiterid = $('.waiterid').val();
+	          console.log(yuyueid);
+	          console.log(waiterid);
+	          $.ajax({      
+	            type:'post',      
+	            url:"{:url('Bespoke/waiter')}",
+	            data:{      
+	                yuyueid:yuyueid,      
+	                waiterid:waiterid    
+	            },
+	            success:function(msg){
+	                if(msg == 1){      
+	                    window.parent.location.reload();    
+	                }else if(msg == 0){      
+	                    art.dialog({
+                                    content: "修改失败",
+                                    icon: 'warning',
+                                    ok: function () {
+                                        this.title("修改失败");
+                                        return true;
+                                    }
+                                });
+	                }
+	      
+	            }      
+	       })      
+	    })      
+    </script>
+</html>

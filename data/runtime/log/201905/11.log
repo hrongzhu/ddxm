@@ -1,0 +1,4 @@
+---------------------------------------------------------------
+[ 2019-05-11T10:58:38+08:00 ] 192.168.25.207 192.168.25.87 GET /admin/collect/export.html
+[ info ] 192.168.25.207:82/admin/collect/export.html [运行时间：387.301152s][吞吐率：0.00req/s] [内存消耗：7,134.11kb] [文件加载：126]
+[ error ] [2]PDO::prepare(): MySQL server has gone away[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:368]

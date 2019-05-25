@@ -1,0 +1,159 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li  class="active"><a href="{:url('Finance/finance_shop')}">门店日报</a></li>
+		</ul>
+        <form class="well form-inline margin-top-20" method="post" action="{:url('Finance/finance_shop')}" id="from">
+            <select name="shop_id" class="form-control" id="shopchange">
+                <foreach name="shop_list" item="v">
+                	<if condition="$v['id'] eq $dian_id">
+                	     <option value="{$v.id}" selected="selected">{$v.name}</option>
+                	     <else />
+                	     <option value="{$v.id}">{$v.name}</option>
+                	</if>
+                </foreach>
+            </select>
+            时间:
+            <input type="text" class="js-bootstrap-date form-control" id="input-name" name="time" value="{$times}">
+            <input type="submit" id="submit" value="搜索">
+        </form>
+		<table class="table table-hover table-bordered">
+			<h4>门店收入汇总</h4>
+			<thead>
+				<tr>
+					<th>收入类型</th>
+					<th>现金收款</th>
+					<th>卡片扣款</th>
+					<th>合计金额</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>水育</td>
+					<td>{$finance_shop.wechat_swim}</td>
+					<td>{$finance_shop.card_swim}</td>
+					<td>{$finance_shop.swim_num}</td>
+				</tr>
+				<tr>
+					<td>推拿</td>
+					<td>{$finance_shop.wechat_tuina}</td>
+					<td>{$finance_shop.card_tuina}</td>
+					<td>{$finance_shop.tuina_num}</td>
+				</tr>
+				<tr>
+					<td>商品</td>
+					<td>{$finance_shop.wechat_goods}</td>
+					<td>{$finance_shop.card_goods}</td>
+					<td>{$finance_shop.goods_num}</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>合计金额:<span style="color: red;">{$finance_shop.shou_num}</span></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="table table-hover table-bordered">
+			<h4>门店支出汇总</h4>
+			<thead>
+				<tr>
+					<th>支出类型</th>
+					<th>支出原因</th>
+					<th>合计金额</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>商品成本</td>
+					<td>商品进货价格成本</td>
+					<td>{$finance_shop.goods_oprice}</td>
+				</tr>
+				<foreach name="finance_shop['shop_zhichu']" item="vo">
+				<tr>
+					<td>其他</td>
+					<td>{$vo.content}</td>
+					<td>{$vo.price}</td>
+					<if condition="$is_del eq 1">
+					    <td><a href="{:url('Finance/finance_delete',array('id'=>$vo['id']))}" class="js-ajax-delete">删除</a></td>
+				    </if>
+				</tr>
+			    </foreach>
+				<tr>
+					<td><a href="javascript:void(0)" class="add">支出添加</a> <a href="javascript:void(0)" class="finance_add">确认添加</a></td>
+					<td></td>
+					<td>合计金额:<span style="color: red;">{$finance_shop.zhichunum}</span></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class="table table-hover table-bordered">
+			<h4>门店售卡汇总</h4>
+			<thead>
+				<tr>
+					<th>卡片类型</th>
+					<th>卡片售价</th>
+					<th>销售数量</th>
+					<th>销售金额</th>
+				</tr>
+			</thead>
+			<tbody>
+				<foreach name="finance_shop['cardzong']" item="vo">
+				<tr>
+					<td>{$vo.title}</td>
+					<td>{$vo.price}</td>
+					<td>{$vo.num}</td>
+					<td>{$vo.pricesum}</td>
+				</tr>
+			    </foreach>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>合计金额:<span style="color: red;">{$finance_shop.countnum}</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+		//添加和删除事件
+	    $(function(){
+	    	$('.add').click(function(){
+	    		var  html="<tr><td>其他</td><td><input type='text' name='content' class='content' placeholder='请输入支出理由'></td><td><input type='text' name='price' class='price' placeholder='请输入支出金额'></td></tr>";
+	    		$(this).parent().parent().before(html);
+	    	})
+	    })
+	    //添加操作
+	    $(function(){
+	    	$('.finance_add').click(function(){
+
+                var shop_id = $("#shopchange").val();
+	    		var content = $(this).parent().parent().prev().children().children('.content').val();
+	    		var price   = $(this).parent().parent().prev().children().children('.price').val();
+	    		var time   = $('#input-name').val();
+                console.log(content);
+                console.log(price);
+                console.log(shop_id);
+	    		$.ajax({
+		    			url:"{:url('Finance/finance_add')}",
+		    			type:"post",
+		    			dataType: 'text',
+	                    data: {shop_id: shop_id,content: content,price: price,time:time},
+	                    success:function(data){
+	                    	if(data==1){
+	                    		alert("添加成功")
+	                    		window.location.reload();
+	                    	}else{
+	                    		alert("添加失败")
+	                    		window.location.reload();
+	                    	}
+	                    }
+		    		})
+	    	})
+	    })
+	</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title></title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="keywords" content=""/>
+    <meta name="description" content=""/>
+    <link href="http://wx.y1y.me/tpl/User/default/common/css/style.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://wx.y1y.me/uploads/n/noiyvo1459419087/c/2/1/6/57b41adb92f5b.css" type="text/css">
+    <link rel="shortcut icon" href="http://wx.y1y.me/tpl/User/default/common/images/favicon.ico"/>
+    <link href="https://cdn.bootcss.com/layer/3.0.1/skin/default/layer.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/layer/3.0.1/layer.min.js" type="text/javascript" ></script>
+    <link rel="stylesheet" type="text/css" href="./tpl/User/default/common/css/cymain.css" />
+    <style>
+        li, a {outline: none}
+        .nav {
+            border-image: url(http://wx.y1y.me/uploads/n/noiyvo1459419087/1/8/f/b/577e24d94192b.jpg) 0 0 10 0 round;
+            -webkit-border-image: url(http://wx.y1y.me/uploads/n/noiyvo1459419087/1/8/f/b/577e24d94192b.jpg) 0 0 10 0 round;
+            -moz-border-image: url(http://wx.y1y.me/uploads/n/noiyvo1459419087/1/8/f/b/577e24d94192b.jpg) 0 0 10 0 round;
+            border-bottom: 4px solid;
+            border-top: 0;
+            -webkit-box-sizing: initial;
+            -moz-box-sizing: initial;
+            box-sizing: initial;
+        }
+
+        .nav_bar li#head_signin:hover {
+            background: none;
+        }
+
+        #rightBlock {
+            float: right;
+            position: fixed;
+            top: 40%;
+            right: 0;
+            z-index: 999;
+        }
+
+        #rightBlock li {
+            background: #48545e;
+            height: 64px;
+            width: 64px;
+            margin-bottom: 1px;
+        }
+
+        #rightBlock li, #rightBlock a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            text-align: center;
+            line-height: 64px;
+        }
+
+        .user_drop {
+            background: #23313d;
+            box-shadow: none;
+            top: 11px;
+            z-index: 10;
+        }
+
+        .user_drop a {
+            color: white
+        }
+
+        #content {
+            width: 1180px;
+            margin: 0 auto;
+        }
+
+        .user_center {
+            position: relative
+        }
+
+        .nav img.partner_icon {
+            position: absolute;
+            width: 20px;
+            height: 18px;
+            right: 4px;
+            top: -10px;
+        }
+
+        .nav img.apply_editor_icon {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            right: 4px;
+            top: 20px;
+        }
+
+        .user_center img:first-child {
+            border-radius: 50%;
+            border: 1px solid #51d2b6;
+            width: 34px;
+            height: 34px;
+            display: block;
+            float: none
+        }
+    </style>
+</head>
+<body>
+<div id="content">
+    <link rel="stylesheet" type="text/css" href="http://wx.y1y.me/tpl/User/default/css/wxaccount.css">
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script src="http://wx.y1y.me/tpl/User/default/js/wxuser.js"></script>
+    <style>
+        .myAppList li a {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 94%;
+            box-sizing: border-box;
+        }
+    </style>
+    <div>
+    </div><!-- Large modal -->
+    <div class="modal fade bs-example-modal-lg" id="chooseWxuserBlock" tabindex="-1" role="dialog"
+         aria-labelledby="myLargeModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="gridSystemModalLabel">选择公众号</h4></div>
+                <div class="modal-body" id="wxuserList"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="goWxuser" class="btn btn-primary">选定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="wxuserContent">
+        <style>.btnGreens, .btnGreen, .btnGrayS, .a_upload, .a_choose {
+                background-image: none !important;
+                border: none !important;
+                text-shadow: none !important;
+                margin-left: 5px;
+                padding: 2px 8px !important;
+                cursor: pointer !important;
+                display: inline-block !important;
+                overflow: visible !important;
+                border-radius: 2px !important;
+                -moz-border-radius: 2px !important;
+                -webkit-border-radius: 2px !important;
+                background-color: #44b549 !important;
+                color: #fff !important;
+                font-size: 14px !important;
+                /* line-height: 1.5 !important; */
+            }
+        </style>
+        <link rel="stylesheet" type="text/css" href="./tpl/User/default/common/css/cymain.css"/>
+        <link rel="stylesheet" type="text/css" href="http://wx.y1y.me/tpl/static/diymen/css/menu.css">
+        <script type="text/javascript">var yyuc_jspath = "http://wx.y1y.me/tpl/static/diymen/";</script>
+        <script type="text/javascript" src="http://wx.y1y.me/tpl/static/diymen/js/jquery.js"></script>
+        <script src="/tpl/static/upyun.js?2013"></script>
+        <script src="/tpl/static/artDialog/jquery.artDialog.js?skin=default"></script>
+        <script src="/tpl/static/artDialog/plugins/iframeTools.js"></script>
+        <script src="//cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+        <script src="//cdn.bootcss.com/jquery.form/3.51/jquery.form.js"></script>
+        <script type="text/javascript">    function drop_confirm(txt, url) {
+                if (confirm(txt)) {
+                    location.href = url;
+                }
+            }
+            function setlatlng(longitude, latitude) {
+                art.dialog.data('longitude', longitude);
+                art.dialog.data('latitude', latitude);
+                // 此时 iframeA.html 页面可以使用 art.dialog.data('test') 获取到数据，如：
+                // document.getElementById('aInput').value = art.dialog.data('test');
+                art.dialog.open('/index.php?m=Map&a=setLatLng&token=xgldnc1502173281&id=41861', {
+                    lock: false,
+                    title: '设置经纬度',
+                    width: 600,
+                    height: 400,
+                    yesText: '关闭',
+                    background: '#000',
+                    opacity: 0.87
+                });
+            }
+            function setNewsImage(type) {
+                if (1 == type) {
+                    var text = '图文';
+                } else if (2 == type) {
+                    var text = '图片';
+                }
+                // 此时 iframeA.html 页面可以使用 art.dialog.data('test') 获取到数据，如：
+                // document.getElementById('aInput').value = art.dialog.data('test');
+                art.dialog.open('/index.php?m=Diymen&a=imagenews&token=xgldnc1502173281&type=' + type, {
+                    lock: false,
+                    title: '选择' + text,
+                    width: 600,
+                    height: 400,
+                    yesText: '关闭',
+                    background: '#000',
+                    opacity: 0.87
+                });
+            }
+            var originalMenu =  '[{"id":"60703","token":"urnnvn1502070798","pid":"0","title":"\u4f60\u8bf4\u7684","keyword":"\u4f60\u597d","url":"","is_show":"1","sort":"0","emoji_code":"","wxsys":"","tel":null,"nav":null,"text":"","reply_text":null,"reply_type":null,"reply_gallery_id":null,"media_id":null,"content":null,"gallery_file_url":null,"gallery_title":null,"gallery_time":null,"class":null},{"id":"60704","token":"urnnvn1502070798","pid":"0","title":"\u83dc\u5355","keyword":"","url":"","is_show":"1","sort":"0","emoji_code":"","wxsys":"","tel":null,"nav":null,"text":"","reply_text":null,"reply_type":null,"reply_gallery_id":null,"media_id":null,"content":null,"gallery_file_url":null,"gallery_title":null,"gallery_time":null,"class":[{"id":"60705","token":"urnnvn1502070798","pid":"60704","title":"\u5b50\u83dc\u5355","keyword":"","url":"","is_show":"1","sort":"0","emoji_code":"","wxsys":"\u626b\u7801\u63a8\u4e8b\u4ef6","tel":null,"nav":null,"text":"","reply_text":null,"reply_type":null,"reply_gallery_id":null,"media_id":null,"content":null,"gallery_file_url":null,"gallery_title":null,"gallery_time":null}]}]';
+            var wxusers = JSON.parse('[{"wxname":"\u827a\u540d\u793e","token":"urnnvn1502070798"},{"wxname":"\u7b11\u7a74\u79d8\u7c4d","token":"gsbyes1502071223"},{"wxname":"kP\u4e36moving","token":"xgldnc1502173281"}]');
+            var currentUser = "xgldnc1502173281";
+            var postURL = "";
+            var loadURL = "";
+            var imageProcessURL = "/index.php?m=Diymen&a=upload_image_to_wechat&token=xgldnc1502173281";
+            // var lazyReadMenusURL = "/index.php?m=Diymen&a=index&ajax_read_menus=1&token=xgldnc1502173281";
+            // 获取授权公众号列表
+            var lazyReadMenusURL = ""
+            var uploadURL = "/index.php?m=Upyun&a=uploadNew&token=xgldnc1502173281";
+            var fetchURL = "/index.php?m=Upyun&a=getGalleryFiles&token=xgldnc1502173281";
+            var staticURL = "http://wx.y1y.me";
+            var syncURL = "/index.php?m=Upyun&a=syncFiles&token=xgldnc1502173281";
+            var syncCheckURL = "/index.php?m=Gallery&a=checkSyncStatus&token=xgldnc1502173281";
+            var addNewsURL = "/index.php?m=Gallery&a=news_edit&token=xgldnc1502173281";
+        </script>
+        <script type="text/javascript" src="/static/wechat/js/diymenu.js"></script>
+        <script type="text/javascript" src="http://wx.y1y.me/tpl/static/diymen/js/image.js"></script>
+        <param id="menuid" class="edit-menu" data-id="" change="0" data-count=""
+               data-edit="/index.php?m=Diymen&a=class_edit"/>
+        <div class="content" style=" background:none; border:none; margin-bottom:30px; margin-top:30px;">
+            <div class="cLineB"></div>
+            <a name="main"></a>
+            <div id="diy-menu">
+                <div id="diy-menu-left">
+                    <div id="diy-menu-phone">
+                        <div id="diy-menu-info"></div>
+                        <div id="diy-menu-top-bar">
+                            <div id="diy-menu-top-bar-return"></div>
+                            <div id="diy-menu-top-bar-name">xxx</div>
+                            <div id="diy-menu-top-bar-user"></div>
+                            <div class="diy-menu-clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="diy-menu-right">
+                    <div id="diy-panel"><h2>菜单配置</h2>
+                        <div class="ftip" style="margin:10px auto;"> {$list|default=1}注意及时保存菜单配置，菜单只有发布后才会在手机侧显示<br>
+                            微信对于公众号自定义菜单有一定缓存时间，发布菜单后如果想及时看到菜单修改，可以取消关注再重新关注公众号快速地看到新菜单。<br></div>
+                    </div>
+                </div>
+                <div class="diy-menu-clearfix"></div>
+            </div>
+        </div>
+        <br/><br/><br/></div>
+</div>
+</body>
+</html>

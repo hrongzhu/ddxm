@@ -1,0 +1,400 @@
+<include file="public@ptheader" />
+<link rel="stylesheet" type="text/css" href="__STATIC__/js/webuploader/webuploader.css">
+<style type="text/css">
+    body{ font-size:12px;}
+    .l-table-edit {}
+    .l-table-edit-td{ padding:4px;}
+    .l-button-submit,.l-button-test{width:80px; float:left; margin-left:10px; padding-bottom:2px;}
+    .l-verify-tip{ left:230px; top:120px;}
+    .ticket-money{display: none;}
+</style>
+<div class="panel margin-top">
+    <div class="panel-head bg-main">
+        <span>添加服务卡</span>
+    </div>
+    <div  class="panel-body">
+        <div class="form-x">
+            <div class="form-group">
+                <label for="name">券名称</label>
+                <label>
+                    <input type="text" class="input" id="name" name="name" value="" data-validate="required:请填写内容">
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><span class="form-required">*</span>券封面</label>
+                <div class="col-md-6 col-sm-10" id="filePicker">+ 选择封面</div>
+                <div class="col-sm-10">
+                    <div id="fileList" class="uploader-list">
+                        <div>
+                            <img src="" id="headimg" style="height:80px;margin-bottom: 10px" alt="">
+                            <input type="hidden" id="cover" name="cover" value="">
+                        </div>
+                    </div>
+                </div>
+                <p><span class="text-red">建议尺寸 680px * 350px</span></p>
+            </div>
+            <div class="form-group">
+                <label for="restrict_num" class="col-sm-2 control-label">单人限购数</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="text" class="input" id="restrict_num" name="restrict_num" value="0" data-validate="required:请填写数字,znumber:请输入不含负数的数字">
+                    <p class="help-block">单人限购数（默认不限）</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 text-dot">* 服务卡类型</label><br>
+                <div class="button-group border-blue radio">
+                    <label class="button radius-rounded active">
+                        <input type="radio" name="type" checked value="1" > 包月卡
+                    </label>
+                    <label class="button radius-rounded">
+                        <input type="radio" name="type" value="2"> 次卡
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="money" class="col-sm-2 control-label">金额</label>
+                <div class="col-md-6 col-sm-10">
+                    <input type="text" class="input" id="money" name="money" value="0" data-validate="required:请填写数字,zfloat:请输入不含负数的数字"/>
+                </div>
+            </div>
+            <!-- 次卡显示内容 -->
+            <div class="select-once">
+                <div class="form-group">
+                    <label>服务项目</label><br/>
+                    <table class="table table-hover table-bordered" id="select-service">
+                        <tr class="text-blue">
+                            <th>服务项目</th><th>包含服务次数</th><th>本服务总金额</th><th><button class="button border-sub add-line" onclick="addtr()">+</button></th>
+                        </tr>
+						<tbody id="server-price-list">
+							<tr>
+                                <td>
+                                    <select class="input" onchange="change_server(this)" >
+                                        <if condition="$serverList neq ''">
+                                            <foreach $serverList as $v>
+                                                <option value="{$v.id}">{$v.sname}</option>
+                                            </foreach>
+                                        </if>
+                                    </select>
+                                </td>
+                                <td><input type="text" class="input" value="1" onchange="edit_num(this)" ></td>
+                                <td><input type="text" onchange="edit_money(this)" class="input" value="0" ></td>
+								<td><button class="button bg-dot del-line" onclick="deltr(this)">删除</button></td>
+							</tr>
+						</tbody>
+					</table>
+                </div>
+            </div>
+            <!-- 包月卡显示内容 -->
+            <div class="select-more">
+                <div class="form-group">
+                    <label for="expire_month" class="col-sm-2 control-label">有效月数</label>
+                    <div class="col-md-6 col-sm-10">
+                        <input type="text" class="input" id="expire_month" name="expire_month" value=""  data-validate="required:请填写数字,plusinteger:请输入大于0的数字">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>服务项目</label><br/>
+                    <div class="button-group border-blue checkbox">
+                        <if condition="$serverList neq ''">
+                            <foreach $serverList as $v>
+                                <label class="button radius-rounded">
+                                    <input name="service_id" value="{$v.id}" type="checkbox">{$v.sname}
+                                </label>
+                            </foreach>
+                        </if>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>上架门店</label>
+                <div class="button-group border-blue checkbox" id="shop_list">
+
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">服务卡状态</label><br>
+                <div class="button-group border-blue radio">
+                    <label class="button radius-rounded">
+                        <input type="radio" name="status" value="1" > 上架
+                    </label>
+                    <label class="button radius-rounded">
+                        <input type="radio" name="status" value="0"> 下架
+                    </label>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">线上商城是否显示</label><br>
+                <div class="button-group border-blue radio">
+                    <label class="button radius-rounded">
+                        <input type="radio" name="is_online" value="1" > 显示
+                    </label>
+                    <label class="button radius-rounded">
+                        <input type="radio" name="is_online" value="0"> 不显示
+                    </label>
+                </div>
+            </div>
+            <br>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button id="sure" class="button bg-blue ">{:lang('SAVE')}</button>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+
+
+<div style="display:none">
+    <script src="__STATIC__/js/admin.js"></script>
+    <script type="text/javascript" src="__STATIC__/js/webuploader/webuploader.min.js"></script>
+</div>
+<script type="text/javascript">
+    $(function() {
+        //图片上传
+        $host = 'http://' + "<?php echo $_SERVER['HTTP_HOST']; ?>"
+        let hosts = "{$host}";
+        let uploader = WebUploader.create({
+            // 选完文件后，是否自动上传。
+            auto: true,
+            // swf文件路径
+            swf: 'https://cdn.staticfile.org/webuploader/0.1.5/Uploader.swf',
+            // 文件接收服务端。
+            server: $host+"{:url('Shop/uploadPic')}",
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: '#filePicker',
+            // 只允许选择图片文件。
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png',
+                mimeTypes: 'image/*'
+            }
+        });
+        //上传成功获取图片路径
+        uploader.on('uploadSuccess', function (file, res) {
+            if(res.code == 200){
+                layer.msg(res.msg, {icon: 1, time: 2000});
+                $('#cover').val(res.data.path);
+                $('#headimg').attr('src',hosts + res.data.path);
+            }else{
+                layer.msg(res.msg, {icon: 2, time: 2000});
+            }
+        });
+
+        $('#sure').click(function () {
+
+            let check_err = 0;
+            $('.check-error').each(function () {
+                check_err += 1;
+            });
+            if(check_err > 0){
+                layer.msg('有条目填写不规范，请检查',{icon:0,time:3000});
+                return false;
+            }
+            let data = {
+                name:'',
+                cover:'',
+                type:1,
+                money:0,
+                restrict_num:0,
+                expire_month:0,
+                shop_id:[],
+                server_list:[],
+                service_id:[],
+                status:0,
+                is_online:0
+            };
+            $('input[name="shop_id"]').each(function () {
+                if(this.checked){
+                    data.shop_id.push($(this).val());
+                }
+            });
+            data.type = $('input:radio[name=type]:checked').val();
+            if(data.type == 2)
+            {
+                $('#server-price-list tr').each(function(i){
+                    var list = {
+                        id:0,
+                        num:0,
+                        money:0
+                    };
+                    $(this).children('td').each(function(j){
+                        if (j === 0) {
+                            list.id = $(this).find('select option:selected').val();
+                        }
+                        if (j === 1 ) {
+                            list.num = $(this).find('input').val();
+                        }
+                        if (j === 2 ) {
+                            list.money = $(this).find('input').val();
+                        }
+                    });
+                    data.service_id.push($(this).find('select option:selected').val());
+                    data.server_list.push(list);
+                });
+            }else{
+                $('input[name="service_id"]').each(function () {
+                    if(this.checked){
+                        data.service_id.push($(this).val());
+                    }
+                });
+            }
+            data.name = $('#name').val();
+            data.money = $('#money').val();
+            data.cover = $('#cover').val();
+            data.restrict_num = $('#restrict_num').val();
+            data.expire_month = $('#expire_month').val();
+            data.status = $('input:radio[name=status]:checked').val();
+            data.is_online = $('input:radio[name=is_online]:checked').val();
+            if (data.name === ''){
+                layer.msg('请输入券名称',{icon:0,time:1500});
+                return false;
+            }
+            console.log(data);
+            $.post("{:url('admin/card/cardAddOrUpdate')}",{data},function (res) {
+                if (res.code === 200){
+                    layer.msg(res.msg,{icon:1,time:2000},function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }else{
+                    layer.msg(res.msg,{icon:0,time:1500});
+                }
+            });
+        });
+
+        $('input:radio[name=type]').change(function(){
+            show_content();
+        })
+        sumPrice();
+        show_content();
+        get_shop_list([]);
+        //动态获取门店列表
+        $('input:checkbox[name=service_id]').change(function(){
+            let service_id = [];
+            $('input:checkbox[name="service_id"]').each(function () {
+                if(this.checked){
+                    service_id.push($(this).val());
+                }
+            });
+            get_shop_list(service_id);
+        })
+    });
+    //统计总金额
+    function sumPrice()
+	{
+		let zprice = 0;
+		$('#server-price-list tr').each(function(i){
+			$(this).children('td').each(function(j){
+				if (j === 2 ) {
+					zprice = parseFloat($(this).find('input').val()) + zprice;
+				}
+			});
+			$('#money').val(zprice);
+		});
+
+	}
+
+    function edit_money(obj){
+		let price = $(obj).val();
+		if (price < 0) {
+            layer.msg('金额不能小于1', {icon:0,time:2000});
+			return false;
+		}
+		sumPrice();
+	}
+
+    //修改次数
+    function edit_num(obj){
+        let num = $(obj).val();
+        if (num < 1) {
+            layer.msg('次数不能小于1', {icon:0,time:2000});
+            $(obj).val(1);
+            return false;
+        }
+    }
+
+    function add_class(obj){
+        if($(obj).parent().is(".active")){
+            console.log($(obj))
+            $(obj).parent().removeClass('active');
+        }else{
+            console.log($(obj))
+            $(obj).parent().addClass('active');
+        }
+    }
+
+    function show_content(){
+        let card_type = $('input:radio[name=type]:checked').val();
+        if (card_type == 2){
+            $('.select-once').show();
+            $('.select-more').hide();
+            each_server();
+        }else{
+            $('.select-more').show();
+            $('.select-once').hide();
+        }
+    };
+
+    function addtr(){
+       let tr = $("#server-price-list tr").eq(0).clone();
+       tr.appendTo("#server-price-list");
+       //tr.insertBefore("#tb tr:last");
+       //动态获取门店
+       sumPrice();
+       each_server();
+    }
+    function deltr(obj){
+        let length = $("#server-price-list tr").length;
+        if(length == 1){
+            layer.msg('基础行不能删除',{icon:0,time:2000});
+            return false;
+        }
+        $(obj).parent().parent().remove();
+        sumPrice();
+        each_server();
+    }
+
+    function change_server(obj)
+    {
+        each_server();
+    }
+
+
+    function each_server()
+    {
+        let service_id = [];
+        $('#server-price-list tr').each(function(i){
+            $(this).children('td').each(function(j){
+                if (j === 0) {
+                    service_id.push($(this).find('select option:selected').val());
+                }
+            });
+        });
+        get_shop_list(service_id);
+    }
+
+    // 获取门店列表
+    function get_shop_list(service_id)
+    {
+        $.post("{:url('card/getShopListByServiceId')}",{service_id},function(res){
+            if(res.code === 200){
+                let shop_checkbox = ``;
+                $.each(res.data,function(i,v){
+                    shop_checkbox += `<label class="button radius-rounded">
+                        <input name="shop_id" onclick="add_class(this)" value="${v.id}" type="checkbox">${v.name}
+                    </label>`;
+                })
+                $('#shop_list').html(shop_checkbox);
+            }else{
+                layer.msg('没有可选门店',{icon:0,time:2000});
+            }
+        })
+    }
+
+</script>
+<include file="public@ptfooter"/>

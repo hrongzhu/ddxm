@@ -1,0 +1,478 @@
+<include file="public@header" />
+<!-- <link rel="stylesheet" href="__STATIC__/css/demo.css" type="text/css"> -->
+</head>
+<body>
+	<div class="wrap">
+		<ul class="nav nav-tabs">
+			<ul class="nav nav-tabs">
+			<li><a href="{:url('Special/activity_list')}">活动专题列表</a></li>
+			<li   class="active"><a href="{:url('Special/activity_add')}">活动专题添加</a></li>
+		    </ul>
+		</ul>
+		<form method="post" class="form-horizontal js-ajax-form margin-top-20" action="{:url('Special/activity_addPost')}" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题标题</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="title">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题副标题</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="form-control" id="input-name" name="subtitle">
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题开始/结束时间</label>
+				<div class="col-md-6 col-sm-10">
+					<input type="text" class="js-bootstrap-datetime" id="input-name" name="stime">-----
+					<input type="text" class="js-bootstrap-datetime" id="input-name" name="etime">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">专题列表图</label>
+				<div class="col-md-6 col-sm-10">
+					<table class="table table-bordered" style="float: left;">
+	                    <!-- <?php
+                        if(!empty($list->mainPic)){
+                            $arr = json_decode($list->mainPic,1);
+                            if(is_array($arr)){
+                            foreach ($arr as $key => $value) {
+                        ?> -->
+                        <div>                               
+                            <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="mainPic">
+                            <input type="hidden" name="mainPic[]" value="<?php echo $value;?>">
+                            <a href="javascript:;" onclick="moveImg(this)">删除</a>
+                        </div>
+                        <!-- <?php
+                            }
+                            }
+                        }
+                        ?> -->
+                        <img src="http://dd.ddxm661.com/library/admin/images/img.png" id="showPic">
+                        <input type="file" id="files" name="files[]" ltype="text"  multiple="multiple" />    
+                        <input type="button" value=" 上传 " onclick="more_upload()" />
+                        (最多上传1张)
+                    </table>
+	            </div>
+            </div>
+            <div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>专题详情</label>
+				<div class="col-md-6 col-sm-10">
+					<script type="text/plain" id="content" name="content"></script>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="input-name" class="col-sm-2 control-label"><span class="form-required">*</span>商品选择</label>
+				<div class="col-md-6 col-sm-10">
+					<div id="goods">
+						<table class="table table-bordered table-condensed table-hover">
+							<thead>
+							<tr>
+								<th>商品名称</th>
+								<th>商品分类</th>
+								<th>商品原价</th>
+								<th>操作</th>
+							</tr>
+							</thead>
+							<tbody id="goods-now">
+							<tr>
+								<td id="add-goods" colspan="4" style="text-align: center;cursor:pointer;color: red" >
+									添加商品
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-primary js-ajax-submit">{:lang('ADD')}</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="modal fade bs-example-modal-lg" id="goodsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document" style="width: 80%">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">添加商品</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-inline">
+						商品名称:
+						<input type="text" class="form-control" id="goods_name" name="search" style="width: 120px;" value="" placeholder="请输入商品名称">
+						一级分类:
+						<select class="form-control" id="f_cate" onchange="get_s_cate($(this))" name="f_cate">
+							<option value="-1">请选择</option>
+							<foreach $f_list as $v>
+								<option value="{$v.id}">{$v.cname}</option>
+							</foreach>
+						</select>
+						二级分类:
+						<select class="form-control selectboy" name="s_cate" id="s_cate">
+							<option value="">请选择</option>
+						</select>
+					</div>
+					<div>
+						<table class="table table-striped table-condensed table-hover">
+							<thead>
+							<tr>
+								<th></th>
+								<th>商品名称</th>
+								<th>商品分类</th>
+								<th>商品原价</th>
+								<th>商品进价</th>
+							</tr>
+							</thead>
+							<tbody id="data-content">
+
+							</tbody>
+						</table>
+
+					</div>
+					<div id="pageBar" style="text-align: right">
+
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" onclick="turnPage(1)" data-dismiss="modal">关闭</button>
+					<button type="button" id="add-save" class="btn btn-primary">保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="__STATIC__/js/admin.js"></script>
+	<script type="text/javascript">
+    //编辑器路径定义
+    var editorURL = GV.WEB_ROOT;
+	</script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.config.js"></script>
+	<script type="text/javascript" src="__STATIC__/js/ueditor/ueditor.all.min.js"></script>
+	<script type="text/javascript">
+
+        var goods_name ='';
+        var f_cate = '';
+        var s_cate = '';
+        var curPage;
+        var totalItem;
+        var pageSize;
+        var totalPage;
+        var choosedGoods = new Array();
+
+        $('#add-goods').click(function(){
+		    turnPage(1);
+		    $('#goodsModal').modal('show');
+		})
+
+        function get_s_cate(obj)
+        {
+            var pid = obj.val();
+            var url = "{:url('Item/itemTlians')}";
+            $.post(url,{pid:pid},function(res){
+                $shtml = '';
+                if (res.code === 200) {
+                    $.each(res.data, function(k, v) {
+                        $shtml += `<option value="${v.id}">${v.cname}</option>`;
+                    });
+                    $('#s_cate').html($shtml);
+                }else {
+                    $shtml = `<option value="">请选择分类</option>`;
+                    $('#s_cate').html($shtml);
+                }
+            },'json');
+        }
+
+        //删除数组某个元素
+        Array.prototype.indexOf = function(val) {
+            for (var i = 0; i < this.length; i++) {
+                if (this[i] == val) return i;
+            }
+            return -1;
+        };
+        Array.prototype.remove = function(val) {
+            var index = this.indexOf(val);
+            if (index > -1) {
+                this.splice(index, 1);
+            }
+        };
+
+        //获取分页数据
+        function turnPage(page) {
+            $.ajax({
+                type: 'get',
+                url: "{:url('MemberGoods/getPage')}",     //这里是请求的后台地址，自己定义
+                data: {
+                    'curPage': page,
+                    'goods_name':goods_name,
+                    'f_cate':f_cate,
+                    's_cate':s_cate
+                },
+                dataType: 'json',
+                beforeSend: function () {
+                    $("#data-content").html('正在加载....');
+                },
+                success: function (data) {
+                    $("#data-content").empty();       //移除原来的分页数据
+                    totalItem = data.data.totalItem; // 返回的总记录数
+					if(totalItem==0){
+					    $("#data-content").html('没有搜索到相关商品!');
+					    $('#pageBar').hide()
+					    return
+					}else{
+                        pageSize = data.data.pageSize; //返回的每一页记录数
+                        curPage = page; //返回的当前页码
+                        totalPage = data.data.totalPage; //返回的总页数
+                        var data_content = data.data.data_content; //返回的数据内容
+                        var data_html = ""; //数据输出的html代码
+                        //添加新的分页数据（数据的显示样式根据自己页面来设置，这里只是一个简单的列表）
+                        $.each(data_content, function (index, array) {
+                            data_html += "<tr><td data-goods-attr-id='"+array['attr_id']+"'><input type='checkbox' class='choosed-goods'></td><td>" + array['title'] +array['attr_name']+array['attr_names']+ "</td><td>" + array['cname'] + "</td><td>" + array['price'] + "</td><td>" + array['oldprice'] + "</td></tr>";
+                        }); //遍历数据，形成html代码
+                        $("#data-content").html(data_html); //输出html代码
+                        getPageBar();
+					}
+
+                },
+                error: function () {
+                    alert("数据加载失败");
+                }
+            });
+        }
+
+        //生成分页导航
+        function getPageBar() {
+            // console.log(curPage)
+            //防止数据错误时候出现当前页数大于总页数
+            if (curPage > totalPage) {
+                curPage = totalPage;
+            }
+            //防止数据错误时候出现当前页数小于第一页
+            if (curPage < 1) {
+                curPage = 1;
+            }
+            //定义分页按钮html代码
+            pageBar = "";
+            //如果不是第一页
+            if (curPage != 1) {
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage(1)'>首页</a></span>";
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage("+(curPage-1)+")'>上一页</a></span>";
+            }
+
+            //显示的页码按钮(5个)
+
+            //定义start 和end两个变量准备循环输出可见的分页按钮
+            var start, end;
+            if (totalPage <= 5) {
+                start = 1;
+                end = totalPage;
+            } else {
+                //当前页码与总页数相差1个的时候，要显示之前的页码
+                if (totalPage - curPage < 2) {
+                    start = totalPage - 4;
+                    end = totalPage;
+                } else {
+                    //显示前面两个和后面两个
+                    start = curPage - 2;
+                    if(start<1){
+                        start = 1;
+                    }
+                    end = curPage + 2;
+                }
+            }
+            //循环输出分页按钮
+            for (var i = start; i <= end; i++) {
+
+                if (i == curPage) {
+                    pageBar += "<span class='pageBtn-selected'><a href='javascript:turnPage(" + i + ")'>" + i + "</a></span>";
+                } else {
+                    pageBar += "<span class='pageBtn'><a href='javascript:turnPage(" + i + ")'>" + i + "</a></span>";
+                }
+            }
+
+            //如果不是最后页,显示输出“下一页 ， 末页”
+
+            if (curPage != totalPage) {
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage(" + (parseInt(curPage) + 1) + ")'>下一页</a></span>";
+                pageBar += "<span class='pageBtn'><a href='javascript:turnPage(" + totalPage + ")'>末页</a></span>";
+            }
+            //匹配改变pageBar里面的内容
+            $("#pageBar").html(pageBar);
+        }
+
+        //搜索条件改变时重新查询结果
+        $('#goods_name').change(function(){
+            goods_name = $(this).val();
+            turnPage(curPage)
+        })
+
+        $('body').on('click','.choosed-goods',function(){
+            var attr_id = $(this).parent().attr('data-goods-attr-id');
+            var goods = $(this).parent().next().text();
+            var cate = $(this).parent().next().next().text();
+            var price = $(this).parent().next().next().next().text();
+            if ($(this).prop('checked')) {
+                choosedGoods.push(attr_id)
+				$("#goods").append('<input type="hidden" name="item_id[]" value="'+attr_id+'">');
+                var htmls = '';
+                htmls+='<tr class="added" data-attr-id="'+attr_id+'" style="display: none"><td>'+goods+'</td><td>'+cate+'</td><td>'+price+'</td>';
+                htmls+='<td><a href="javascript:void(0)" class=del-goods>删除</a></td></tr>';
+                $('#goods-now').append(htmls)
+            }else {
+                choosedGoods.remove(attr_id)
+				$("input[type=hidden][value="+attr_id+"]").remove();
+                $('tr[data-attr-id="'+attr_id+'"]').remove();
+            }
+        })
+
+        //点击保存会员商品时显示表格，隐藏模态框
+        $('#add-save').click(function(){
+            $('#goods-now tr.added').show()
+            $('#goodsModal').modal('hide')
+            turnPage(1)
+        })
+
+        //删除一个活动商品，从数组中移除，删除表格
+        $('#goods-now').on('click','.del-goods',function(){
+            var id = $(this).parent().parent().attr('data-attr-id')
+            choosedGoods.remove(id)
+            $("input[type=hidden][value="+id+"]").remove();
+            $('#goods-now tr[data-attr-id="'+id+'"]').remove();
+        })
+
+		$(function () {
+
+	        editorcontent = new baidu.editor.ui.Editor();
+	        editorcontent.render('content');
+	        try {
+	            editorcontent.sync();
+	        } catch (err) {
+	        }
+
+	        $('.btn-cancel-thumbnail').click(function () {
+	            $('#thumbnail-preview').attr('src', '__TMPL__/public/assets/images/default-thumbnail.png');
+	            $('#thumbnail').val('');
+	        });
+	    });
+	    //添加和删除事件
+	    $(function(){
+	    	$('.add').click(function(){
+                var  name = $(this).prev().prev().attr('name');
+	    		var  html="<select  name='"+name+"' id='input-parent_id'><foreach name='itemxuan' item='vo'><option value='{$vo.id}'>{$vo.title}</option></foreach></select>";
+	    		$(this).prev().before(html);
+	    	})
+	    	$('.addsku').click(function(){
+                var  name = $(this).prev().prev().attr('name');
+	    		var  html="<input type='text' id='input-name' name="+name+" value=''  placeholder='请输入属性参数'>";
+	    		$(this).prev().before(html);
+	    	})
+	    	$('.delete').click(function(){
+	    		var name=$(this).prev().attr('class');
+	    		$(this).prev().remove();
+	    	})
+	    })
+	    $(function(){
+	    	$('.selectpid').change(function(){
+	    		var pid=$('.selectpid').val();
+
+	    		$.ajax({
+	    			url:"{:url('Card/card_lian')}",
+	    			type:"post",
+	    			dataType: 'text',
+                    data: {pid: pid},
+                    success:function(data){
+                    	var selecthead="<select  name='sid' class='form-control' id='input-parent_id'><option value='0'>请选择</option>";
+                    	var selectfoot="</select>";
+                    	var med;
+                    	for (var i = 0; i <= data.length; i++) {
+                    		med+="<option value='"+data[i]['id']+"''>"+data[i]['name']+"<option>";
+                    	}
+                    	var html=selecthead+med+selectfoot;
+                    	alert(html);
+                    }
+	    		})
+	    	})
+	    })
+	    // 多图上传
+		function more_upload(){
+		    var i = 0;
+		    var s = '';
+		    $("img[id=mainPic]").each(function(n,e){
+		        i++;
+		    })
+		    var formData = new FormData();
+		    upfile = $("#files")[0].files;
+		    var ii = 1;
+		    $(upfile).each(function (n, e) {
+		        i++;
+		        if(i>1){
+		            alert("上传图片不能超过1张");
+		            clearInterval(s);
+		            return false;
+		        }
+		        var s = setTimeout(function () {
+		            formData.append('file', $(e)[0]);
+		            upload_img(2, formData);
+		        }, ii);
+		        ii += 1000;
+		    });
+		}
+        // 上传图片
+		function upload_img(id,formData){
+		    
+		    var file =  $("#lfile").val();
+		    // var files =  $("#files").val();
+
+		    if((file =='' || file == null) && id==1){
+		        alert("请选择上传文件");
+		        return false;
+		    }else{      
+		        var upfile = '';
+		        if(id==1){
+		            var formData = new FormData();
+		            upfile = $("#lfile")[0].files[0];
+		            formData.append('file',upfile);
+		        }
+		        $.ajax({
+		            url: "{:url('Item/uploadPic')}",
+		            type: "POST",
+		            data: formData,
+		            dataType:'json',
+		            processData : false, // 不处理发送的数据，因为data值是Formdata对象，不需要对数据做处理
+		            contentType : false, // 不设置Content-type请求头
+		            success: function(data) {
+		                if(data.success==1){
+		                    // $(".imgList").append($(".imgList>div:first-child").clone());
+		                    if(id==1){
+		                        $("#thumb").val(data.msg);
+		                        $("#showThumb").attr('src',data.msg);
+		                    }else{
+		                        var img = '<div><img src="'+data.msg+'" id="mainPic" style="width:60px;height:100px;">';
+		                        img += '<input type="hidden" name="mainPic[]" value="'+data.msgurl+'"><a href="javascript:;" onclick="moveImg(this)">删除</a></div>'
+		                        $("#showPic").before(img);
+		                        $("#files").val('');
+		                        // $("#mainPic").val(data.msg);
+		                        // $("#showPic").attr('src',data.msg);
+		                    }
+		                }else{
+		                    alert(data.msg);
+		                }
+		            },
+		            error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                alert("上传失败，请检查网络后重试");
+		            }
+		        });
+		    }
+		}
+		function moveImg(str){
+		    $(str).parent().remove();
+		}
+	</script>
+</body>
+</html>

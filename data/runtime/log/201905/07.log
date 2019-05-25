@@ -1,0 +1,27 @@
+---------------------------------------------------------------
+[ 2019-05-07T11:41:38+08:00 ] 192.168.25.207 192.168.25.87 GET /admin/collect/getAllData
+[ info ] 192.168.25.207:82/admin/collect/getAllData [è¿è¡Œæ—¶é—´ï¼š2.219127s][ååç‡ï¼š0.45req/s] [å†…å­˜æ¶ˆè€—ï¼š2,981.85kb] [æ–‡ä»¶åŠ è½½ï¼š81]
+[ error ] [2002]SQLSTATE[HY000] [2002] ÏòÒ»¸öÎŞ·¨Á¬½ÓµÄÍøÂç³¢ÊÔÁËÒ»¸öÌ×½Ó×Ö²Ù×÷¡£
+[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:293]
+---------------------------------------------------------------
+[ 2019-05-07T11:41:43+08:00 ] 192.168.25.207 192.168.25.87 POST /admin/reject/getInitData
+[ info ] 192.168.25.207:82/admin/reject/getInitData [è¿è¡Œæ—¶é—´ï¼š1.106063s][ååç‡ï¼š0.90req/s] [å†…å­˜æ¶ˆè€—ï¼š2,969.73kb] [æ–‡ä»¶åŠ è½½ï¼š82]
+[ error ] [2002]SQLSTATE[HY000] [2002] ÏòÒ»¸öÎŞ·¨Á¬½ÓµÄÍøÂç³¢ÊÔÁËÒ»¸öÌ×½Ó×Ö²Ù×÷¡£
+[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:293]
+---------------------------------------------------------------
+[ 2019-05-07T14:19:09+08:00 ] 192.168.25.207 192.168.25.87 GET /admin/finance/sale_report.html
+[ info ] 192.168.25.207:82/admin/finance/sale_report.html [è¿è¡Œæ—¶é—´ï¼š33.671926s][ååç‡ï¼š0.03req/s] [å†…å­˜æ¶ˆè€—ï¼š3,084.15kb] [æ–‡ä»¶åŠ è½½ï¼š86]
+[ error ] [1]Maximum execution time of 30 seconds exceeded[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:381]
+---------------------------------------------------------------
+[ 2019-05-07T15:06:54+08:00 ] 127.0.0.1 127.0.0.1 GET /admin/collect/getAllData
+[ info ] localhost:82/admin/collect/getAllData [è¿è¡Œæ—¶é—´ï¼š2.137122s][ååç‡ï¼š0.47req/s] [å†…å­˜æ¶ˆè€—ï¼š2,981.66kb] [æ–‡ä»¶åŠ è½½ï¼š81]
+[ error ] [2002]SQLSTATE[HY000] [2002] ÏòÒ»¸öÎŞ·¨Á¬½ÓµÄÍøÂç³¢ÊÔÁËÒ»¸öÌ×½Ó×Ö²Ù×÷¡£
+[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:293]
+---------------------------------------------------------------
+[ 2019-05-07T15:11:50+08:00 ] 192.168.25.207 192.168.25.87 GET /admin/finance/sale_report.html
+[ info ] 192.168.25.207:82/admin/finance/sale_report.html [è¿è¡Œæ—¶é—´ï¼š36.790104s][ååç‡ï¼š0.03req/s] [å†…å­˜æ¶ˆè€—ï¼š3,084.29kb] [æ–‡ä»¶åŠ è½½ï¼š86]
+[ error ] [1]Maximum execution time of 30 seconds exceeded[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:381]
+---------------------------------------------------------------
+[ 2019-05-07T15:57:21+08:00 ] 192.168.25.207 192.168.25.87 GET /admin/finance/sale_report.html
+[ info ] 192.168.25.207:82/admin/finance/sale_report.html [è¿è¡Œæ—¶é—´ï¼š35.562034s][ååç‡ï¼š0.03req/s] [å†…å­˜æ¶ˆè€—ï¼š3,084.34kb] [æ–‡ä»¶åŠ è½½ï¼š86]
+[ error ] [1]Maximum execution time of 30 seconds exceeded[E:\php\work\backend\simplewind\thinkphp\library\think\db\Connection.php:381]

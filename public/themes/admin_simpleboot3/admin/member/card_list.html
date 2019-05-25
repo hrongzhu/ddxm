@@ -1,0 +1,141 @@
+<include file="public@header" />
+</head>
+<body>
+	<div class="wrap js-check-wrap">
+		<ul class="nav nav-tabs">
+			<li class="active"><a href="{:url('Member/userCardList',['id' => $member_id])}">体验券列表</a></li>
+			<li ><a href="{:url('Member/userVoucherList',['id' => $member_id])}">代金券列表</a></li>
+			<li ><a href="{:url('Member/userServerList',['id' => $member_id])}">服务券列表</a></li>
+			<if condition="$is_show == 1">
+				<li style="float: right"><a href="javascript:void (0);" onclick="admin_edit('添加体验券','{:url('Member/addUserCard',['member_id' => $member_id])}')">添加体验券</a></li>
+			</if>
+		</ul>
+		<table class="table table-hover table-bordered">
+			<thead>
+				<tr>
+					<th width="50">ID</th>
+					<th >图片</th>
+					<th >用户昵称</th>
+					<th >卡片描述</th>
+					<th >所属店铺</th>
+					<th >有效天数</th>
+					<th >剩余天数</th>
+					<th >到期时间</th>
+					<th >支付时间</th>
+					<th >操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			<if condition="empty($list)">
+				<tr>
+					<td colspan="11" style="text-align: center">该用户暂无体验券</td>
+				</tr>
+				<else/>
+				<foreach name="list" item="v">
+					<tr>
+						<td>{$v.id}</td>
+						<td><img width="100px" src="{$v.thumb ? $v.thumb : 'http://dd.ddxm661.com/library/wechat/images/defaultHead.png'}"></td>
+						<td>{$v.nickname}</td>
+						<td>{$v.title}</td>
+						<td>{$v.shop_name ? $v.shop_name : '总店'}</td>
+						<td>{$v.yxq}</td>
+						<td>{$v.sy_day}</td>
+						<td>{:date('Y-m-d H:i',$v.yxqtime)}</td>
+						<td>{:date('Y-m-d H:i',$v.paytime)}</td>
+						<td>
+							<if condition="$v.status==2">
+								已核销
+							</if>
+							<if condition="$v.status==1">
+							<a href="javascript:void (0);" class="check-coupon" data-coupon-id="{$v.id}">核销</a>
+							<a href="javascript:void (0);" onclick="admin_edit('查看详情', '{:url('Member/editUserCard', ['id'=>$v.id])}')">编辑</a>
+							<a href="javascript:void (0);" onclick="admin_del('{:url('Member/delUserCard')}', '{$v.id}','{$v.is_default}')">删除</a>
+							</if>
+							<if condition="$v.status==0">
+								已禁用
+							</if>
+						</td>
+					</tr>
+				</foreach>
+			</if>
+
+			</tbody>
+		</table>
+	</div>
+
+	<div class="modal fade" id="checkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="checkModalLabel">选择服务人员</h4>
+				</div>
+
+				<div class="modal-body recharge-items">
+					<select name="worker" id="worker" class="form-control">
+						<foreach name="worker_list" item="vo">
+							<option value="{$vo.id}">{$vo.workid.$vo.name}</option>
+						</foreach>
+					</select>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="check_coupon_save">确认核销</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script src="__STATIC__/js/admin.js"></script>
+<script type="text/javascript">
+    /*编辑*/
+    function admin_edit(title,url){
+        layer_show(title,url);
+    }
+
+    $('.check-coupon').click(function(){
+        var coupon_id = $(this).attr('data-coupon-id');
+		$('#checkModal').modal('show');
+		$('#check_coupon_save').click(function(){
+            layer.confirm("确认核销？", { title: "核销确认" }, function (index) {
+                layer.close(index);
+                $.post("{:url('Coupon/check')}", { 'id':coupon_id }, function (res) {
+					if(res.code==1){
+					    layer.msg(res.msg,{'icon':1},$('#checkModal').modal('hide'));
+					    window.location.reload();
+					}else {
+                        layer.msg(res.msg,{'icon':2});
+                    }
+                });
+            });
+        })
+	})
+
+    //禁用用户
+    function admin_del(url,id,is_default) {
+    	var msg = '';
+    	if (is_default == 1) {
+    		msg = "当前卡是默认卡,确认要删除？";
+    	}else{
+    		msg = "确认要删除？";
+    	}
+        layer.confirm(msg, {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            $.post(url, { card_id: id}, function(data){
+                if (data.code == 200) {
+                    layer.msg(data.msg, {icon: 1,time:1000},function () {
+                        location.reload();
+                    });
+				}else {
+                    layer.msg(data.msg, {icon: 0,time:1000});
+				}
+            });
+        });
+    }
+
+</script>
+</body>
+</html>
